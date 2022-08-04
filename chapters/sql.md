@@ -6,18 +6,18 @@ We will use sqlite3 database as an example.
 
 ## sqlite lib installation and check-out
 
-Make sure you have sqlite3 in your system
+Make sure there is sqlite3 in the system
 ```bash
 $ which sqlite3
 /usr/bin/sqlite3
 ```
 
-J lang offers sqlite library that is about to be installed when you
+J lang offers sqlite library that is about to be installed when
 ```j
 install 'all'
 ```
 
-It might be the case that upon loading the library you will see the following:
+It might be the case that upon loading the library one can see the following:
 ```j
    load 'data/sqlite'
    getbin_psqlite_''
@@ -29,8 +29,8 @@ chmod: cannot access '/usr/share/j/9.03/addons/data/sqlite/lib/libjsqlite3.so': 
 Connection failed: curl: (23) Failure writing output to destination
 ```
 
-If that happens then you need to download the shared library from http://www.jsoftware.com/download/sqlite/
-and move it to the referenced location:
+If that happens then the shared library can be downloaded from http://www.jsoftware.com/download/sqlite/
+and moved to the referenced location:
 ```bash
 sudo mv libjsqlite3.so /usr/share/j/9.03/addons/data/sqlite/lib/
 ```
@@ -41,8 +41,8 @@ Now one can try again:
 Sqlite binary installed.
 ```
 
-Now let's create DB with three tables using the following script
-(this is a DB used in prolific SQL Cookbook by Anthony Molinaro and Robert de Graaf [1])
+Now let's create a db with three tables using the following script
+(this is the db used in prolific SQL Cookbook by Anthony Molinaro and Robert de Graaf [1])
 ```bash
 $ cat create.sql
 DROP TABLE IF EXISTS dept;
@@ -118,12 +118,12 @@ insert into salgrade values (4,2001,3000);
 insert into salgrade values (5,3001,99999);
 ```
 
-We can load the script
+The script be loaded
 ```bash
 $ sqlite3 test.db < create.sql
 ```
 
-Now we can inspect the created db
+The created db can be inspected
 ```sql
 $ sqlite3 test.db
 SQLite version 3.39.1 2022-07-13 19:41:41
@@ -234,8 +234,9 @@ Let's see now how to work with this db in J.
 └─────┴─────┴─────┘
 ```
 
-We see big negative numbers instead of NULLs that stem from the fact that
-NULL is represented as the largest possible negative integer. For j64 it is
+One can see big negative numbers instead of NULLs that stem from the fact that
+NULL is represented as the largest possible negative integer. The following values
+are used for NULLs of different types
 ```j
    SQLITE_NULL_INTEGER_psqlite_
 _9223372036854775808
@@ -293,3 +294,48 @@ Let's now use high level interface and see how to set default NULL values if nee
 ```
 
 Note: `dbreads 'emp'` is shortcut for `dbreads 'SELECT * FROM emp'`
+
+The NULL for integer were reset in all occurences, in both columns `mgr` and `comm`.
+In order to be more fine-grained, one can use SQL's `coalesce`
+```j
+   q1=:'SELECT empno,ename,job,mgr,hiredate,sal,comm,deptno FROM emp'
+   dbreads q1
+┌─────┬──────┬─────────┬────────────────────┬────────┬────┬────────────────────┬──────┐
+│empno│ename │job      │mgr                 │hiredate│sal │comm                │deptno│
+├─────┼──────┼─────────┼────────────────────┼────────┼────┼────────────────────┼──────┤
+│7369 │SMITH │CLERK    │                7902│93/6/13 │ 800│                   0│20    │
+│7499 │ALLEN │SALESMAN │                7698│98/8/15 │1600│                 300│30    │
+│7521 │WARD  │SALESMAN │                7698│96/3/26 │1250│                 500│30    │
+│7566 │JONES │MANAGER  │                7839│95/10/31│2975│_9223372036854775808│20    │
+│7698 │BLAKE │MANAGER  │                7839│92/6/11 │2850│_9223372036854775808│30    │
+│7782 │CLARK │MANAGER  │                7839│93/5/14 │2450│_9223372036854775808│10    │
+│7788 │SCOTT │ANALYST  │                7566│96/3/5  │3000│_9223372036854775808│20    │
+│7839 │KING  │PRESIDENT│_9223372036854775808│90/6/9  │5000│                   0│10    │
+│7844 │TURNER│SALESMAN │                7698│95/6/4  │1500│                   0│30    │
+│7876 │ADAMS │CLERK    │                7788│99/6/4  │1100│_9223372036854775808│20    │
+│7900 │JAMES │CLERK    │                7698│00/6/23 │ 950│_9223372036854775808│30    │
+│7934 │MILLER│CLERK    │                7782│00/1/21 │1300│_9223372036854775808│10    │
+│7902 │FORD  │ANALYST  │                7566│97/12/5 │3000│_9223372036854775808│20    │
+│7654 │MARTIN│SALESMAN │                7698│98/12/5 │1250│                1400│30    │
+└─────┴──────┴─────────┴────────────────────┴────────┴────┴────────────────────┴──────┘
+   q1=:'SELECT empno,ename,job,coalesce(mgr,1000),hiredate,sal,coalesce(comm,0),deptno FROM emp'
+   dbreads q1
+┌─────┬──────┬─────────┬──────────────────┬────────┬────┬────────────────┬──────┐
+│empno│ename │job      │coalesce(mgr,1000)│hiredate│sal │coalesce(comm,0)│deptno│
+├─────┼──────┼─────────┼──────────────────┼────────┼────┼────────────────┼──────┤
+│7369 │SMITH │CLERK    │7902              │93/6/13 │ 800│   0            │20    │
+│7499 │ALLEN │SALESMAN │7698              │98/8/15 │1600│ 300            │30    │
+│7521 │WARD  │SALESMAN │7698              │96/3/26 │1250│ 500            │30    │
+│7566 │JONES │MANAGER  │7839              │95/10/31│2975│   0            │20    │
+│7698 │BLAKE │MANAGER  │7839              │92/6/11 │2850│   0            │30    │
+│7782 │CLARK │MANAGER  │7839              │93/5/14 │2450│   0            │10    │
+│7788 │SCOTT │ANALYST  │7566              │96/3/5  │3000│   0            │20    │
+│7839 │KING  │PRESIDENT│1000              │90/6/9  │5000│   0            │10    │
+│7844 │TURNER│SALESMAN │7698              │95/6/4  │1500│   0            │30    │
+│7876 │ADAMS │CLERK    │7788              │99/6/4  │1100│   0            │20    │
+│7900 │JAMES │CLERK    │7698              │00/6/23 │ 950│   0            │30    │
+│7934 │MILLER│CLERK    │7782              │00/1/21 │1300│   0            │10    │
+│7902 │FORD  │ANALYST  │7566              │97/12/5 │3000│   0            │20    │
+│7654 │MARTIN│SALESMAN │7698              │98/12/5 │1250│1400            │30    │
+└─────┴──────┴─────────┴──────────────────┴────────┴────┴────────────────┴──────┘
+```

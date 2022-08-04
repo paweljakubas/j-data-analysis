@@ -23,3 +23,5 @@ a wonderful *Fractals, Visualization and J*. Besides that a list of high quality
 
 ## Contents
 ### [SQL](chapters/sql.md)
+### [CSV](chapters/csv.md)
+### [Kafka](chapters/kafka.md)
