@@ -295,7 +295,8 @@ Let's now use high level interface and see how to set default NULL values if nee
 
 Note: `dbreads 'emp'` is shortcut for `dbreads 'SELECT * FROM emp'`
 
-The NULL for integer were reset in all occurences, in both columns `mgr` and `comm`.
+The NULL for integer were reset for all occurences in any table, for
+`emp` table in both columns `mgr` and `comm`.
 In order to be more fine-grained, one can use SQL's `coalesce`
 ```j
    q1=:'SELECT empno,ename,job,mgr,hiredate,sal,comm,deptno FROM emp'
@@ -340,7 +341,8 @@ In order to be more fine-grained, one can use SQL's `coalesce`
 └─────┴──────┴─────────┴────┴────────┴────┴────┴──────┘
 ```
 
-Sometimes we need the use of `'` inside query like for `concat`. This is how we do it from J
+Sometimes we need the use of `'` inside query like for `concat`. If one want to use it from J
+each tick needs to be preceded also by `'` as belows.
 ```j
    q2=:'SELECT empno,ename||'' working as ''||job as employee,coalesce(mgr,1000) as mgr,hiredate,sal,coalesce(comm,0) as comm,deptno FROM emp'
    dbreads q2
