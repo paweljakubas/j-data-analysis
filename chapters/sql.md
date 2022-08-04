@@ -318,24 +318,48 @@ In order to be more fine-grained, one can use SQL's `coalesce`
 │7902 │FORD  │ANALYST  │                7566│97/12/5 │3000│_9223372036854775808│20    │
 │7654 │MARTIN│SALESMAN │                7698│98/12/5 │1250│                1400│30    │
 └─────┴──────┴─────────┴────────────────────┴────────┴────┴────────────────────┴──────┘
-   q1=:'SELECT empno,ename,job,coalesce(mgr,1000),hiredate,sal,coalesce(comm,0),deptno FROM emp'
+   q1=:'SELECT empno,ename,job,coalesce(mgr,1000) as mgr,hiredate,sal,coalesce(comm,0) as comm,deptno FROM emp'
    dbreads q1
-┌─────┬──────┬─────────┬──────────────────┬────────┬────┬────────────────┬──────┐
-│empno│ename │job      │coalesce(mgr,1000)│hiredate│sal │coalesce(comm,0)│deptno│
-├─────┼──────┼─────────┼──────────────────┼────────┼────┼────────────────┼──────┤
-│7369 │SMITH │CLERK    │7902              │93/6/13 │ 800│   0            │20    │
-│7499 │ALLEN │SALESMAN │7698              │98/8/15 │1600│ 300            │30    │
-│7521 │WARD  │SALESMAN │7698              │96/3/26 │1250│ 500            │30    │
-│7566 │JONES │MANAGER  │7839              │95/10/31│2975│   0            │20    │
-│7698 │BLAKE │MANAGER  │7839              │92/6/11 │2850│   0            │30    │
-│7782 │CLARK │MANAGER  │7839              │93/5/14 │2450│   0            │10    │
-│7788 │SCOTT │ANALYST  │7566              │96/3/5  │3000│   0            │20    │
-│7839 │KING  │PRESIDENT│1000              │90/6/9  │5000│   0            │10    │
-│7844 │TURNER│SALESMAN │7698              │95/6/4  │1500│   0            │30    │
-│7876 │ADAMS │CLERK    │7788              │99/6/4  │1100│   0            │20    │
-│7900 │JAMES │CLERK    │7698              │00/6/23 │ 950│   0            │30    │
-│7934 │MILLER│CLERK    │7782              │00/1/21 │1300│   0            │10    │
-│7902 │FORD  │ANALYST  │7566              │97/12/5 │3000│   0            │20    │
-│7654 │MARTIN│SALESMAN │7698              │98/12/5 │1250│1400            │30    │
-└─────┴──────┴─────────┴──────────────────┴────────┴────┴────────────────┴──────┘
+┌─────┬──────┬─────────┬────┬────────┬────┬────┬──────┐
+│empno│ename │job      │mgr │hiredate│sal │comm│deptno│
+├─────┼──────┼─────────┼────┼────────┼────┼────┼──────┤
+│7369 │SMITH │CLERK    │7902│93/6/13 │ 800│   0│20    │
+│7499 │ALLEN │SALESMAN │7698│98/8/15 │1600│ 300│30    │
+│7521 │WARD  │SALESMAN │7698│96/3/26 │1250│ 500│30    │
+│7566 │JONES │MANAGER  │7839│95/10/31│2975│   0│20    │
+│7698 │BLAKE │MANAGER  │7839│92/6/11 │2850│   0│30    │
+│7782 │CLARK │MANAGER  │7839│93/5/14 │2450│   0│10    │
+│7788 │SCOTT │ANALYST  │7566│96/3/5  │3000│   0│20    │
+│7839 │KING  │PRESIDENT│1000│90/6/9  │5000│   0│10    │
+│7844 │TURNER│SALESMAN │7698│95/6/4  │1500│   0│30    │
+│7876 │ADAMS │CLERK    │7788│99/6/4  │1100│   0│20    │
+│7900 │JAMES │CLERK    │7698│00/6/23 │ 950│   0│30    │
+│7934 │MILLER│CLERK    │7782│00/1/21 │1300│   0│10    │
+│7902 │FORD  │ANALYST  │7566│97/12/5 │3000│   0│20    │
+│7654 │MARTIN│SALESMAN │7698│98/12/5 │1250│1400│30    │
+└─────┴──────┴─────────┴────┴────────┴────┴────┴──────┘
+```
+
+Sometimes we need the use of `'` inside query like for `concat`. This is how we do it from J
+```j
+   q2=:'SELECT empno,ename||'' working as ''||job as employee,coalesce(mgr,1000) as mgr,hiredate,sal,coalesce(comm,0) as comm,deptno FROM emp'
+   dbreads q2
+┌─────┬──────────────────────────┬────┬────────┬────┬────┬──────┐
+│empno│employee                  │mgr │hiredate│sal │comm│deptno│
+├─────┼──────────────────────────┼────┼────────┼────┼────┼──────┤
+│7369 │SMITH working as CLERK    │7902│93/6/13 │ 800│   0│20    │
+│7499 │ALLEN working as SALESMAN │7698│98/8/15 │1600│ 300│30    │
+│7521 │WARD working as SALESMAN  │7698│96/3/26 │1250│ 500│30    │
+│7566 │JONES working as MANAGER  │7839│95/10/31│2975│   0│20    │
+│7698 │BLAKE working as MANAGER  │7839│92/6/11 │2850│   0│30    │
+│7782 │CLARK working as MANAGER  │7839│93/5/14 │2450│   0│10    │
+│7788 │SCOTT working as ANALYST  │7566│96/3/5  │3000│   0│20    │
+│7839 │KING working as PRESIDENT │1000│90/6/9  │5000│   0│10    │
+│7844 │TURNER working as SALESMAN│7698│95/6/4  │1500│   0│30    │
+│7876 │ADAMS working as CLERK    │7788│99/6/4  │1100│   0│20    │
+│7900 │JAMES working as CLERK    │7698│00/6/23 │ 950│   0│30    │
+│7934 │MILLER working as CLERK   │7782│00/1/21 │1300│   0│10    │
+│7902 │FORD working as ANALYST   │7566│97/12/5 │3000│   0│20    │
+│7654 │MARTIN working as SALESMAN│7698│98/12/5 │1250│1400│30    │
+└─────┴──────────────────────────┴────┴────────┴────┴────┴──────┘
 ```
