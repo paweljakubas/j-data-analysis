@@ -22,11 +22,10 @@ a wonderful *Fractals, Visualization and J*. Besides that a list of high quality
 
 
 ## Contents
-### Data ingestion
-#### [SQL](chapters/sql.md)
-#### [CSV]
-#### [Kafka]
-### Data analysis
-#### [Deep look at statistical distributions]
-#### [Classical inference]
-#### [Bayesian inference]
+### [SQL](chapters/sql.md)
+### [CSV](chapters/csv.md)
+### [Gnuplot]
+### [Data analysis cases using SQL and J]
+### [Deep look at statistical distributions]
+### [Classical inference]
+### [Bayesian inference]
