@@ -12,11 +12,12 @@ a wonderful *Fractals, Visualization and J*. Besides that a list of high quality
 3. Data Analysis Techniques for Physical Scientists, Claude A. Pruneau, Cambridge University Press 2017
 4. Statistics, Data Mining, and Machine Learning in Astronomy: A Practical Python Guide for the Analysis of Survey Data, Željko Ivezić, Andrew J. Connolly, Jacob T. VanderPlas, and Alexander Gray, Updated Edition, Princeton University Press 2020
 5. Information Theory, Inference, and Learning Algorithms, David J.C. MacKay, Cambridge University Press 2003
+6. Introduction to Probability Models, Sheldon M. Ross, 12th ed., Academic Press 2019
 
 ### J language
-6. Learning J. An Introduction to the J Programming Language, Roger Stokes, [https://www.jsoftware.com/help/learning/contents.htm#toc]
-7. Fractals, Visualization & J, 4th ed. (2 Parts), Clifford A. Reiter 2016
-8. Fifty Shades of J, Norman Thomson, [https://code.jsoftware.com/wiki/Fifty_Shades_of_J]
+7. Learning J. An Introduction to the J Programming Language, Roger Stokes, [https://www.jsoftware.com/help/learning/contents.htm#toc]
+8. Fractals, Visualization & J, 4th ed. (2 Parts), Clifford A. Reiter 2016
+9. Fifty Shades of J, Norman Thomson, [https://code.jsoftware.com/wiki/Fifty_Shades_of_J]
 
    *Throughout the code J903 version of J lang was used.*
 
