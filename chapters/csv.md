@@ -227,4 +227,48 @@ options , CRLF " NO 1 iso8601-char
 │emp     │14  │
 │salgrade│ 5  │
 └────────┴────┘
+   jd'csvreport'
+table: dept
+src: ./dept.csv
+start: 2022 8 22 12 38 13
+rows: 4
+
+table: emp
+src: ./emp.csv
+start: 2022 8 22 13 28 2
+rows: 14
+error:  col  error                                # row position text
+error:  mgr  ECMISSING   empty or all blank field 1 7   319      ,90/6/9,5000,0,10 CR  LF 7
+error:  comm ECMISSING   empty or all blank field 8 3   169      ,20 CR  LF 7698,BLAKE,MANA
+
+table: salgrade
+src: ./salgrade.csv
+start: 2022 8 22 13 28 55
+rows: 5
+
+   NB. Now if we get out of ijconsole or dump we can restore the db provided we have CSVFOLDER set correctly
+$ ijconsole
+   load 'jd'
+!!! Jd key: non-commercial use only!
+   jdwelcome_jd_ NB. run this sentence for important information
+
+   jdadminx'test'
+   jd'info summary'
+┌─────┬────┐
+│table│rows│
+├─────┼────┤
+└─────┴────┘
+   jd'csvrestore'
+|Jd error: CSVFOLDER must be defined as path to csv files: op:csvrestore db:test user:u : jd_jd_
+|       13!:8&3 t
+   CSVFOLDER=:'./'
+   jd'csvrestore'
+   jd'info summary'
+┌────────┬────┐
+│table   │rows│
+├────────┼────┤
+│dept    │ 4  │
+│emp     │14  │
+│salgrade│ 5  │
+└────────┴────┘
 ```
