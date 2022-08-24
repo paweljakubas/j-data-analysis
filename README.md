@@ -25,9 +25,9 @@ a wonderful *Fractals, Visualization and J*. Besides that a list of high quality
 ## Contents
 ### [SQL](chapters/sql.md)
 ### [CSV](chapters/csv.md)
-### [Gnuplot]
-### [Data analysis cases using SQL and J]
-### [Performance considerations]
+### [Gnuplot](chapters/gnuplot.md)
+### [Data analysis cases using SQL and J's approach]
+### [Performance study: db vs table vs jd]
 ### [Deep look at statistical distributions]
 ### [Classical inference]
 ### [Bayesian inference]
