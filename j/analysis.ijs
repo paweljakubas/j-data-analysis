@@ -71,3 +71,14 @@ writeline 'EOD'
 writeline S:0 strs
 2!:0 'gnuplot -p -c temp.gp'
 )
+
+NB. gnuplot the table with gnuplot commands
+NB. y is expected to be structured as follows:
+NB. cmds=:'cmd1';'cmd2'
+NB. data=:toTableFromCSV 'file'
+NB. y=:(<cmds),<data
+fromTableToGnuplot =: 3 : 0
+strs=. 0{y
+t=. toGridFromTable >1{y
+fromGridToGnuplot strs;<t
+)
