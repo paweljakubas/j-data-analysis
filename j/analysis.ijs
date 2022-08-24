@@ -55,3 +55,19 @@ NB. transform from grid view to table view
 toTableFromGrid=: 3 : 0
 ({.,:,each/@:(,:each)@}.) y
 )
+
+NB. gnuplot the grid with gnuplot commands
+NB. y is expected to be structured as follows:
+NB. cmds=:'cmd1';'cmd2'
+NB. data=:toGridFromCSV 'file'
+NB. y=:(<cmds),<data
+fromGridToGnuplot =: 3 : 0
+strs=. >0 { y
+csv=. >1 { y
+writeline=. {{ 2!:0 'echo ''', y, ''' >> temp.gp' }}
+2!:0 'echo ''$d << EOD'' > temp.gp'
+csv appenddsv 'temp.gp';',';''
+writeline 'EOD'
+writeline S:0 strs
+2!:0 'gnuplot -p -c temp.gp'
+)

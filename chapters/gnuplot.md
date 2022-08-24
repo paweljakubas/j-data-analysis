@@ -6,7 +6,7 @@ option available in gnuplot, and because I work with many languages I prefer to 
 gnuplot rather than rely on, very often not so sophisticated, many graphical solutions.
 
 Let's say we have the following CSV, toplot.csv:
-```bash
+```
 $ cat toplot.csv
 date,quote,symbol
 2000-01-03,6.58,DGS10
@@ -18,7 +18,7 @@ date,quote,symbol
 ```
 We can use the heredocs feature introduced in gnuplot 5 which allows embedding the data in the same file as
 plot's setting and driver. Example, below
-```bash
+```
 $ cat toplot.gp
 $d << EOD
 date,quote,symbol
@@ -38,7 +38,7 @@ plot $d skip 1 u (timecolumn(1,"%Y-%m-%d")):2 w lp lw 3 title "DGS10"
 In order to invoke the above script the following command can be used.
 As a result, the gnuplot script will be invoked (of course gnuplot is required to be installed)
 in a persistent mode in a separate window, one can look at the plot and optionally save it.
-```bash
+```
 $ gnuplot -p -c toplot.gp
 ```
 One should see the below figure
@@ -104,7 +104,7 @@ This is what it is needed to accomplish that.
 ```
 
 After that we have toplot.gp file recreated
-```bash
+```
 $ cat temp.gp
 $d << EOD
 date,quote,symbol
@@ -126,4 +126,32 @@ We can now invoke it
 ```j
   2!:0 'gnuplot -p -c temp.gp'
   NB. gnuplot is spawn and we see the same figure
+```
+
+Alternatively we can use funtionality from j/analysis.ijs
+```j
+   cmds=:'set datafile separator comma';'set xdata time;set timefmt "%y-%m-%d"';'set format x "%m/%d"';'plot $d skip 1 u (timecolumn(1,"%Y-%m-%d")):2 w lp lw 3 title "DGS10"'
+   cmds
+┌────────────────────────────┬─────────────────────────────────────┬────────────────────┬─────────────────────────────────────────────────────────────────────┐
+│set datafile separator comma│set xdata time;set timefmt "%y-%m-%d"│set format x "%m/%d"│plot $d skip 1 u (timecolumn(1,"%Y-%m-%d")):2 w lp lw 3 title "DGS10"│
+└────────────────────────────┴─────────────────────────────────────┴────────────────────┴─────────────────────────────────────────────────────────────────────┘
+   ]toplot=:(<cmds),<g
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬─────────────────────────┐
+│┌────────────────────────────┬─────────────────────────────────────┬────────────────────┬─────────────────────────────────────────────────────────────────────┐│┌──────────┬─────┬──────┐│
+││set datafile separator comma│set xdata time;set timefmt "%y-%m-%d"│set format x "%m/%d"│plot $d skip 1 u (timecolumn(1,"%Y-%m-%d")):2 w lp lw 3 title "DGS10"│││date      │quote│symbol││
+│└────────────────────────────┴─────────────────────────────────────┴────────────────────┴─────────────────────────────────────────────────────────────────────┘│├──────────┼─────┼──────┤│
+│                                                                                                                                                               ││2000-01-03│6.58 │DGS10 ││
+│                                                                                                                                                               │├──────────┼─────┼──────┤│
+│                                                                                                                                                               ││2000-01-04│6.49 │DGS10 ││
+│                                                                                                                                                               │├──────────┼─────┼──────┤│
+│                                                                                                                                                               ││2000-01-05│6.62 │DGS10 ││
+│                                                                                                                                                               │├──────────┼─────┼──────┤│
+│                                                                                                                                                               ││2000-01-06│6.57 │DGS10 ││
+│                                                                                                                                                               │├──────────┼─────┼──────┤│
+│                                                                                                                                                               ││2000-01-07│6.52 │DGS10 ││
+│                                                                                                                                                               │├──────────┼─────┼──────┤│
+│                                                                                                                                                               ││2000-01-10│6.57 │DGS10 ││
+│                                                                                                                                                               │└──────────┴─────┴──────┘│
+└───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴─────────────────────────┘
+   fromGridToGnuplot toplot
 ```
