@@ -47,6 +47,6 @@ realize the task of data analysis.
 ### [Error-based learning]
 ### [Deep learning]
 ### [Case study - Titanic]
-### [Case study - Multimodal Signle-Cell Integration]
+### [Case study - Multimodal Single-Cell Integration]
 ### [Case study - Galaxy classification]
 ### [Case study - Treasury yield curves and surfaces]
