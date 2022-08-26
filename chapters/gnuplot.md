@@ -286,3 +286,17 @@ Let's plot 5Y for US bond only.
 The plot created is below
 
 ![image](../figures/5yusBand.png)
+
+Let's now plot 5Y tenor for both US and JP.
+```j
+   plotline1=:'$d skip 1 u (timecolumn(1,"%Y-%m-%d")):( (stringcolumn(3) eq "5Y")  && (stringcolumn(4) eq "US") ? $2 : NaN) w l lw 3 t "5Y US"'
+   plotline2=:'$d skip 1 u (timecolumn(1,"%Y-%m-%d")):( (stringcolumn(3) eq "5Y")  && (stringcolumn(4) eq "JP") ? $2 : NaN) w l lw 3 t "5Y JP"'
+   plot=:'plot ',plotline1,', ',plotline2
+   cmds=:settings , <plot
+   toplot=:(<cmds),<bonds
+   fromTableToGnuplot toplot
+```
+
+The plot created is below
+
+![image](../figures/5yusjpBand.png)
