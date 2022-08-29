@@ -42,7 +42,7 @@ Sqlite binary installed.
 ```
 
 Now let's create a db with three tables using the following script
-(this is the db used in prolific SQL Cookbook by Anthony Molinaro and Robert de Graaf [1])
+(this is the db used in a prolific `SQL Cookbook` by Anthony Molinaro and Robert de Graaf [1])
 ```bash
 $ cat create.sql
 DROP TABLE IF EXISTS dept;
@@ -118,7 +118,7 @@ insert into salgrade values (4,2001,3000);
 insert into salgrade values (5,3001,99999);
 ```
 
-The script be loaded
+The script can be loaded via
 ```bash
 $ sqlite3 test.db < create.sql
 ```
@@ -295,7 +295,7 @@ Let's now use high level interface and see how to set default NULL values if nee
 
 Note: `dbreads 'emp'` is shortcut for `dbreads 'SELECT * FROM emp'`
 
-The NULL for integer were reset for all occurences in any table, for
+The NULL for integer were reset for all occurences in any table, ie., for
 `emp` table in both columns `mgr` and `comm`.
 In order to be more fine-grained, one can use SQL's `coalesce`
 ```j
@@ -341,8 +341,8 @@ In order to be more fine-grained, one can use SQL's `coalesce`
 └─────┴──────┴─────────┴────┴────────┴────┴────┴──────┘
 ```
 
-Sometimes we need the use of `'` inside query like for `concat`. If one want to use it from J
-each tick needs to be preceded also by `'` as belows.
+Sometimes we need the use of `'` inside query like for `concat`. If one is to use it from J
+each tick needs to be preceded also by `'` as shown below.
 ```j
    q2=:'SELECT empno,ename||'' working as ''||job as employee,coalesce(mgr,1000) as mgr,hiredate,sal,coalesce(comm,0) as comm,deptno FROM emp'
    dbreads q2

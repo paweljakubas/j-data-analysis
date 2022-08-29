@@ -8,7 +8,7 @@
 
 ## Dump CSV files
 
-Let's dump tables as CSV files from SQL.
+Let's dump tables from chapter [SQL](sql.md) as CSV files using SQL.
 ```sql
 $ sqlite3 test.db
 SQLite version 3.39.2 2022-07-21 15:24:47
@@ -62,7 +62,7 @@ grade,losal,hisal
 
 ## Load CSV file to table in J
 
-Having CSV files we can ingest to J as follows.
+Having CSV files we can ingest them to J as follows.
 ```j
    load 'tables/dsv'
    readdsv 'dept.csv'
@@ -132,8 +132,8 @@ The last versions are consistent with what we got using sql in J.
 
 ## Load CSV file to Jd
 
-We can also ingest CSV file to Jd which is a relational database management system from Jsoftware that is implemented in J.
-The Jd advertises itself as a very perfomant solution and has prolific hands-on tutorial (https://www.jsoftware.com/jd_tuts.html)
+We can also ingest CSV file to `Jd` which is a relational database management system from Jsoftware that is implemented in J.
+The Jd advertises itself as a very perfomant solution and has a prolific hands-on tutorial (https://www.jsoftware.com/jd_tuts.html)
 ```j
    load 'jd'
 !!! Jd key: non-commercial use only!
@@ -155,7 +155,7 @@ The Jd advertises itself as a very perfomant solution and has prolific hands-on 
 |Jd error: CSVFOLDER must be defined as path to csv files: op:csvrd db:test user:u : jd_jd_
 |       13!:8&3 t
 
-   NB. After setting CSV folder it is still demanding presence of corresponding
+   NB. After setting CSV folder it is still demanding presence of accompanying metafiles
    CSVFOLDER=:'./'
    jd'csvrd dept.csv dept'
 |Jd error: cdefs file not found: op:csvrd db:test user:u : jd_jd_

@@ -1,9 +1,10 @@
 # Gnuplot from J
 
 Although a number of plotting options are available in J and they are well documented in its wiki
-I will pursue calling gnuplot from J. The reason behind this is that I want to have every
-option available in gnuplot, and because I work with many languages I prefer to reuse my knowledge of
-gnuplot rather than rely on, very often not so sophisticated, many graphical solutions.
+I will opt for direct calling gnuplot from J. The reason behind this is that I want to have every
+option available in gnuplot and wield complete control over it. Also because I work with many languages
+I prefer to reuse my knowledge of gnuplot rather than rely on, very often not so sophisticated,
+many graphical solutions provided.
 
 Let's say we have the following CSV, toplot.csv:
 ```
@@ -45,11 +46,12 @@ One should see the following figure
 
 ![image](../figures/toplot.png)
 
-My way of visual exploration of data using J will be creating gnuplot file, like toplot.gp, and then invoking it.
+My prefered way of visual exploration of data using J will be creating gnuplot file, like toplot.gp,
+and then invoking it.
 Afterwards, optionally, changing the settings, data, and invoking again until I get the desired result.
 At some point I will optionally save the figure and the corresponding *.gp script if it
 is worth persisting or documenting.
-This is what is needed to accomplish that in a very straightforward way.
+This is what is needed to accomplish that flow in J in a very straightforward way.
 ```j
    NB. we have table
    ]t
@@ -123,7 +125,7 @@ set format x "%m/%d"
 plot $d skip 1 u (timecolumn(1,"%Y-%m-%d")):2 w lp lw 3 title "DGS10"
 ```
 
-We can now load it in gnuplot from J console
+We can now load it in gnuplot in J console
 ```j
   2!:0 'gnuplot -p -c temp.gp'
   NB. gnuplot is spawn and we see the same figure
@@ -173,7 +175,7 @@ Alternatively we can use functionality from j/analysis.ijs which is doing exactl
 ```
 
 Let's investigate several examples of different types of plots that are common (here we assume we have data structured as CSV).
-The example data looks like follows (these are quotes for 52W, 5Y and 10Y goverment bonds, for US and Japan in the same three week period)
+The example data looks like follows (these are quotes for 52W, 5Y and 10Y goverment bonds, for both US and Japan, quoted in the same three week period)
 extracted from US and Japan central bank sites. The corresponding file is in `datasets/bonds.csv`
 ```j
    ]scriptdir=: './j/'
