@@ -82,3 +82,43 @@ strs=. 0{y
 t=. toGridFromTable >1{y
 fromGridToGnuplot strs;<t
 )
+
+NB. Select rows from inverted table, header is maintained.
+NB. x is vector, y is table
+rowsFromTable=: 4 : 0
+(({.),((<x) {&.> }.)) y
+)
+NB.    (0,1,2) rowsFromTable bonds
+NB. ┌──────────┬───────┬─────┬───────┐
+NB. │date      │quote  │tenor│country│
+NB. ├──────────┼───────┼─────┼───────┤
+NB. │2022-05-30│-0.0860│1Y   │JP     │
+NB. │2022-05-31│-0.0840│1Y   │JP     │
+NB. │2022-06-01│-0.0840│1Y   │JP     │
+NB. └──────────┴───────┴─────┴───────┘
+NB.    (_1,2) rowsFromTable bonds
+NB. ┌──────────┬───────┬─────┬───────┐
+NB. │date      │quote  │tenor│country│
+NB. ├──────────┼───────┼─────┼───────┤
+NB. │2022-06-17│3.2313 │10Y  │US     │
+NB. │2022-06-01│-0.0840│1Y   │JP     │
+NB. └──────────┴───────┴─────┴───────┘
+
+NB. Select random rows from inverted table, header is maintained.
+NB. x is number of random rows, y is table
+randomRowsFromTable=: 4 : 0
+nrows=.>{.{.#&.>}.y
+assert. (x <: nrows)
+(x?nrows) rowsFromTable y
+)
+NB.    3 randomRowsFromTable bonds
+NB. ┌──────────┬───────┬─────┬───────┐
+NB. │date      │quote  │tenor│country│
+NB. ├──────────┼───────┼─────┼───────┤
+NB. │2022-06-15│0.2520 │10Y  │JP     │
+NB. │2022-06-02│2.9131 │10Y  │US     │
+NB. │2022-06-09│0.2490 │10Y  │JP     │
+NB. └──────────┴───────┴─────┴───────┘
+NB.    90 randomRowsFromTable bonds
+NB. |assertion failure: randomRowsFromTable
+NB. |       (x<:nrows)

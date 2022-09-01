@@ -301,7 +301,7 @@ What will follow is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted
 
 ### Use index to select
 ```j
-   NB. Take first three rows
+   NB. Take first three rows which replicates could head
    (({.),((<0 1 2) {&.> }.)) bonds
 ┌──────────┬───────┬─────┬───────┐
 │date      │quote  │tenor│country│
@@ -319,5 +319,40 @@ What will follow is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted
 │2022-06-17│3.2313 │10Y  │US     │
 │2022-06-16│3.1952 │10Y  │US     │
 │2022-06-15│3.2915 │10Y  │US     │
+└──────────┴───────┴─────┴───────┘
+
+   NB. Or using functionality from j/analysis.ijs
+   (_1,2) rowsFromTable bonds
+┌──────────┬───────┬─────┬───────┐
+│date      │quote  │tenor│country│
+├──────────┼───────┼─────┼───────┤
+│2022-06-17│3.2313 │10Y  │US     │
+│2022-06-01│-0.0840│1Y   │JP     │
+└──────────┴───────┴─────┴───────┘
+
+   NB. We want to also see some number of random rows
+   ]nrows=:(>{.{.#&.>}.bonds)
+89
+   5?nrows
+55 79 63 88 42
+   (5?nrows) rowsFromTable bonds
+┌──────────┬───────┬─────┬───────┐
+│date      │quote  │tenor│country│
+├──────────┼───────┼─────┼───────┤
+│2022-06-14│3.0520 │1Y   │US     │
+│2022-06-15│-0.0860│1Y   │JP     │
+│2022-06-02│0.0000 │5Y   │JP     │
+│2022-06-03│-0.0090│5Y   │JP     │
+│2022-06-14│0.0700 │5Y   │JP     │
+└──────────┴───────┴─────┴───────┘
+
+  NB. Also using functionality from j/analysis.ijs
+   3 randomRowsFromTable bonds
+┌──────────┬───────┬─────┬───────┐
+│date      │quote  │tenor│country│
+├──────────┼───────┼─────┼───────┤
+│2022-06-15│0.2520 │10Y  │JP     │
+│2022-06-02│2.9131 │10Y  │US     │
+│2022-06-09│0.2490 │10Y  │JP     │
 └──────────┴───────┴─────┴───────┘
 ```
