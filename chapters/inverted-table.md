@@ -2,7 +2,9 @@
 
 ## Contents
 1. [Why to use inverted table](#rationale-behind-using-inverted-table)
-2. [Take selected rows via index](#use-index-to-select)
+2. [Select rows via index](#use-index-to-select-rows)
+3. [Filter columns](#filter-columns)
+4. [Order rows](#order-rows)
 
 ### Rationale behind using inverted table
 
@@ -285,21 +287,21 @@ Let's load bond data in a boxed form and as inverted table and compare memory fo
 │2022-06-17│3.2313 │10Y  │US     │
 └──────────┴───────┴─────┴───────┘
 
-   NB. let' see how much each data object occupies
+   NB. let's see how much each data object occupies space in bytes
    7!:5 ;: 'bonds bondsGrid'
 3840 50176
 ```
 
 Inverted table is very efficient as a data structure when heterogeneous columns are to be stored.
-In the example above the difference in favor of the inverted table is one order of magnitude. Hence,
-the inverted table will be a way we will represent heterogeneous columns.
+In the example above the difference favoring the inverted table is one order of magnitude. Hence,
+the inverted table will be a way we will represent heterogeneous columns and try to master.
 
 Let's see how we can realize useful operations on that.
 What will follow is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted_Table] and
 [https://code.jsoftware.com/wiki/User:Pascal_Jasmin/tuples-ranked_operations_on_inverted_table_data].
 
 
-### Use index to select
+### Use index to select rows
 ```j
    NB. Take first three rows which replicates could head
    (({.),((<0 1 2) {&.> }.)) bonds
@@ -346,7 +348,7 @@ What will follow is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted
 │2022-06-14│0.0700 │5Y   │JP     │
 └──────────┴───────┴─────┴───────┘
 
-  NB. Also using functionality from j/analysis.ijs
+   NB. Also using functionality from j/analysis.ijs
    3 randomRowsFromTable bonds
 ┌──────────┬───────┬─────┬───────┐
 │date      │quote  │tenor│country│
@@ -356,3 +358,50 @@ What will follow is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted
 │2022-06-09│0.2490 │10Y  │JP     │
 └──────────┴───────┴─────┴───────┘
 ```
+
+### Filter columns
+
+Let's say we want to filter out all rows that have quotes less than 3.4.
+What we can do to achieve that is to specify row indices that have `quote >= 3.4`.
+```j
+   3.4 < ". >(<(<0),(<1)){ }.bonds
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+   ]ixs=: (3.4 < ". (>(<(<0),(<1)){ }.bonds) ) # i.nrows
+69 70 85
+   NB. Notice ". which converts string to numbers (if possible)
+
+   ixs rowsFromTable bonds
+┌──────────┬───────┬─────┬───────┐
+│date      │quote  │tenor│country│
+├──────────┼───────┼─────┼───────┤
+│2022-06-13│3.4820 │5Y   │US     │
+│2022-06-14│3.6013 │5Y   │US     │
+│2022-06-14│3.4791 │10Y  │US     │
+└──────────┴───────┴─────┴───────┘
+```
+
+What is we request `quote >= 3.4` but only for 5y tenor, ie., `tenor == 5Y` .
+```j
+   ]ixs1=: 3.4 < ". >(<(<0),(<1)){ }.bonds
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+
+   NB. Notice ;: which forms words, value in predicate needs to be boxed to be comparable
+   ]ixs2=: (<'5Y') = ,;: >(<(<0),(<2)){ }.bonds
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+   NB. now we can fuse ixs1 and ixs2 through *. (AND operator)
+   ]ixs=: ixs1 *. ixs2
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+   ]ixss=: ixs # i.nrows
+69 70
+   ixss rowsFromTable bonds
+┌──────────┬───────┬─────┬───────┐
+│date      │quote  │tenor│country│
+├──────────┼───────┼─────┼───────┤
+│2022-06-13│3.4820 │5Y   │US     │
+│2022-06-14│3.6013 │5Y   │US     │
+└──────────┴───────┴─────┴───────┘
+```
+
+
+### Order rows
