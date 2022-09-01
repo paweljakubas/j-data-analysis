@@ -36,6 +36,7 @@ realize the task of data analysis.
 ## Contents
 ### [SQL](chapters/sql.md)
 ### [CSV](chapters/csv.md)
+### [Inverted table](chapters/inverted-table.md)
 ### [Gnuplot](chapters/gnuplot.md)
 ### [Data analysis cases using SQL and J's approach]
 ### [Performance study: db vs table vs jd]

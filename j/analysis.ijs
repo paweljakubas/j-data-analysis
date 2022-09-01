@@ -7,7 +7,7 @@ NB. ]scriptdir=: 'PATH-TO-REPO/j-data-analysis/j/'
 NB. 0!:1 < scriptdir,'analysis.ijs'
 
 NB. Let's define dataframe's views:
-NB. (a) grid view
+NB. (a) grid view, ie., every field is boxed
 NB. ┌──────────┬─────┬──────┐
 NB. │date      │quote│symbol│
 NB. ├──────────┼─────┼──────┤
@@ -23,7 +23,7 @@ NB. │2000-01-07│6.52 │DGS10 │
 NB. ├──────────┼─────┼──────┤
 NB. │2000-01-10│6.57 │DGS10 │
 NB. └──────────┴─────┴──────┘
-NB. (a) table view
+NB. (a) table view, also known as an inverted table
 NB. ┌──────────┬─────┬──────┐
 NB. │date      │quote│symbol│
 NB. ├──────────┼─────┼──────┤
