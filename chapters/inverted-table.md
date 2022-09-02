@@ -467,7 +467,7 @@ Now let's request data slice for trading week from 2022-06-06 to 2022-06-10.
 ```
 
 ### Order rows
-The another useful task is ability to order by column. We can order by column using '/:' or '\:'
+The another useful task is ability to order by column. We can order by column using "/:" or "\:"
 ```j
    ]ixs=: /: ;: >(<(<0),(<0)){ }. week
 0 5 10 15 20 25 1 6 11 16 21 26 2 7 12 17 22 27 3 8 13 18 23 28 4 9 14 19 24 29
@@ -546,7 +546,7 @@ The another useful task is ability to order by column. We can order by column us
 └──────────┴───────┴─────┴───────┘
 ```
 
-In order to order using more than 1 column (so first order by column1 then within column2, etc.)
+For the sake of ordering with more than 1 column (so first order by column1 then finetune with column2 ordering, etc.)
 we will introduce `ranking` as follows:
 ```j
    ranking=: i.!.0~ { /:@/:
@@ -556,7 +556,7 @@ we will introduce `ranking` as follows:
 10 10 10 10 10 20 20 20 20 20  0  0  0  0  0 10 10 10 10 10 20 20 20 20 20  0  0  0  0  0
  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15
 ```
-Upon close look we can discern patterns reflecting data columns represented in ranking row-wise.
+Upon a close look we can discern patterns reflecting data columns represented in ranking row-wise.
 
 ```j
    tgrade=: /: @ |: @: (ranking&>)
@@ -595,7 +595,7 @@ Upon close look we can discern patterns reflecting data columns represented in r
 │2022-06-10│3.2637 │5Y │US│
 └──────────┴───────┴───┴──┘
 
-  NB. with header
+  NB. the same with header attached
    (({.),((,.&.>) @ (tsort @ }.))) week
 ┌──────────┬───────┬─────┬───────┐
 │date      │quote  │tenor│country│
@@ -632,9 +632,62 @@ Upon close look we can discern patterns reflecting data columns represented in r
 │2022-06-10│3.2637 │5Y   │US     │
 └──────────┴───────┴─────┴───────┘
 ```
-We see that table was ordered by `date` column first. Then within the same `date` value
-rows are ordered by `quote` value in ascending order. As the are unique the ordering by the rest
+We see that table was ordered by `date` column at first. Then within the same `date` value
+rows are ordered by `quote` value in ascending order. As they are unique the ordering by the rest
 columns is omitted.
 
 We might want more fine-grained control over ordering. For example, we might request to
-order `date` by ascending order and for the same values order via `tenor`.
+order `date` by ascending order and within the same values of `date` order further via `tenor`.
+In order to achieve that we need to change how ranking matrix looks like.
+```j
+   ]ranking1=: ((<(<0),(<0)){ranking&> }.week) ,0, ((<(<0),(<2)){ranking&> }.week) ,: 0
+ 0  6 12 18 24  0  6 12 18 24 0 6 12 18 24  0  6 12 18 24  0  6 12 18 24 0 6 12 18 24
+ 0  0  0  0  0  0  0  0  0  0 0 0  0  0  0  0  0  0  0  0  0  0  0  0  0 0 0  0  0  0
+10 10 10 10 10 20 20 20 20 20 0 0  0  0  0 10 10 10 10 10 20 20 20 20 20 0 0  0  0  0
+ 0  0  0  0  0  0  0  0  0  0 0 0  0  0  0  0  0  0  0  0  0  0  0  0  0 0 0  0  0  0
+
+   NB. so we left ranking only for date and for tenor.
+   tgrade=: /: @ |: @: {{ranking1}}
+   tsort=: <@tgrade {&.> ]
+   (({.),((,.&.>) @ (tsort @ }.))) week
+┌──────────┬───────┬─────┬───────┐
+│date      │quote  │tenor│country│
+├──────────┼───────┼─────┼───────┤
+│2022-06-06│0.2400 │10Y  │JP     │
+│2022-06-06│3.0399 │10Y  │US     │
+│2022-06-06│-0.0800│1Y   │JP     │
+│2022-06-06│2.1960 │1Y   │US     │
+│2022-06-06│-0.0040│5Y   │JP     │
+│2022-06-06│3.0368 │5Y   │US     │
+│2022-06-07│0.2450 │10Y  │JP     │
+│2022-06-07│2.9791 │10Y  │US     │
+│2022-06-07│-0.0830│1Y   │JP     │
+│2022-06-07│2.2060 │1Y   │US     │
+│2022-06-07│0.0000 │5Y   │JP     │
+│2022-06-07│2.9906 │5Y   │US     │
+│2022-06-08│0.2450 │10Y  │JP     │
+│2022-06-08│3.0270 │10Y  │US     │
+│2022-06-08│-0.0850│1Y   │JP     │
+│2022-06-08│2.2450 │1Y   │US     │
+│2022-06-08│-0.0100│5Y   │JP     │
+│2022-06-08│3.0355 │5Y   │US     │
+│2022-06-09│0.2490 │10Y  │JP     │
+│2022-06-09│3.0455 │10Y  │US     │
+│2022-06-09│-0.0830│1Y   │JP     │
+│2022-06-09│2.3000 │1Y   │US     │
+│2022-06-09│-0.0100│5Y   │JP     │
+│2022-06-09│3.0702 │5Y   │US     │
+│2022-06-10│0.2500 │10Y  │JP     │
+│2022-06-10│3.1649 │10Y  │US     │
+│2022-06-10│-0.0900│1Y   │JP     │
+│2022-06-10│2.5070 │1Y   │US     │
+│2022-06-10│-0.0040│5Y   │JP     │
+│2022-06-10│3.2637 │5Y   │US     │
+└──────────┴───────┴─────┴───────┘
+```
+
+We are almost there when it comes to ordering. We see tenor is ordered as `10Y - 1Y - 5Y` which
+lexicographically is correct but we may want to introduce custom ordering like `1Y - 5Y - 10Y`
+to cover time relation ('1Y' stands for one year, and so on).
+In order to do that we need to construct ranking based on this custom ordering and use it in constructing the new
+ranking matrix.
