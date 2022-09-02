@@ -9,7 +9,7 @@ introductory material when learning J. The great example how beautifully and eff
 a wonderful *Fractals, Visualization and J*. Besides that a list of high quality book references is specified.
 The notes are supposed to be hands-on and to illustrate how efficient data analysis can be performed be using J.
 The topics and techniques presented reflects the author's subjective take what is crucial to master in order to
-realize the task of data analysis.
+realize the many tasks that are required for valid data analysis.
 
 ### SQL, data analysis, probability, statistics and machine learning
 1. SQL Cookbook, Anthony Molinaro, Robert de Graaf, 2nd ed., O'Reilly 2021

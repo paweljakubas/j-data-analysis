@@ -333,7 +333,7 @@ What will follow is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted
 └──────────┴───────┴─────┴───────┘
 
    NB. We want to also see some number of random rows
-   ]nrows=:(>{.{.#&.>}.bonds)
+   ]nrows=: >{.{.#&.>}.bonds
 89
    5?nrows
 55 79 63 88 42
@@ -364,9 +364,9 @@ What will follow is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted
 Let's say we want to filter out all rows that have quotes less than 3.4.
 What we can do to achieve that is to specify row indices that have `quote >= 3.4`.
 ```j
-   3.4 < ". >(<(<0),(<1)){ }.bonds
+   3.4 <: ". >(<(<0),(<1)){ }.bonds
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
-   ]ixs=: (3.4 < ". (>(<(<0),(<1)){ }.bonds) ) # i.nrows
+   ]ixs=: (3.4 <: ". (>(<(<0),(<1)){ }.bonds) ) # i.nrows
 69 70 85
    NB. Notice ". which converts string to numbers (if possible)
 
@@ -382,7 +382,7 @@ What we can do to achieve that is to specify row indices that have `quote >= 3.4
 
 What is we request `quote >= 3.4` but only for 5y tenor, ie., `tenor == 5Y` .
 ```j
-   ]ixs1=: 3.4 < ". >(<(<0),(<1)){ }.bonds
+   ]ixs1=: 3.4 <: ". >(<(<0),(<1)){ }.bonds
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
 
    NB. Notice ;: which forms words, value in predicate needs to be boxed to be comparable
@@ -403,5 +403,67 @@ What is we request `quote >= 3.4` but only for 5y tenor, ie., `tenor == 5Y` .
 └──────────┴───────┴─────┴───────┘
 ```
 
+Now let's request data slice for trading week from 2022-06-06 to 2022-06-10.
+```j
+   NB. let's take the above filter as an example to illustrate what is going on
+   res=: ixss rowsFromTable bonds
+   ;: >(<(<0),(<0)){ }. res
+┌────┬─┬──┬─┬──┐
+│2022│-│06│-│13│
+├────┼─┼──┼─┼──┤
+│2022│-│06│-│14│
+└────┴─┴──┴─┴──┘
+   NB. the first column is extracted and interpreted 5-word tokens.
+
+   {{4{y}}"1;:>(<(<0),(<0)){ }. res
+┌──┬──┐
+│13│14│
+└──┴──┘
+
+   NB. Still we have byte represented symbols boxed. We can convert this to numbers
+   {{".>4{y}}"1;:>(<(<0),(<0)){ }. res
+13 14
+
+   NB. Now we can impose predicates in the inline functionality.
+   ]ixs=: {{(6 = ".>2{y) *. ((6,7,8,9,10) e.~ ".>4{y)}}"1;:>(<(<0),(<0)){ }. bonds
+0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0
+   ]ixss=: ixs # i.nrows
+5 6 7 8 9 20 21 22 23 24 35 36 37 38 39 49 50 51 52 53 64 65 66 67 68 79 80 81 82 83
+   ixss rowsFromTable bonds
+┌──────────┬───────┬─────┬───────┐
+│date      │quote  │tenor│country│
+├──────────┼───────┼─────┼───────┤
+│2022-06-06│-0.0800│1Y   │JP     │
+│2022-06-07│-0.0830│1Y   │JP     │
+│2022-06-08│-0.0850│1Y   │JP     │
+│2022-06-09│-0.0830│1Y   │JP     │
+│2022-06-10│-0.0900│1Y   │JP     │
+│2022-06-06│-0.0040│5Y   │JP     │
+│2022-06-07│0.0000 │5Y   │JP     │
+│2022-06-08│-0.0100│5Y   │JP     │
+│2022-06-09│-0.0100│5Y   │JP     │
+│2022-06-10│-0.0040│5Y   │JP     │
+│2022-06-06│0.2400 │10Y  │JP     │
+│2022-06-07│0.2450 │10Y  │JP     │
+│2022-06-08│0.2450 │10Y  │JP     │
+│2022-06-09│0.2490 │10Y  │JP     │
+│2022-06-10│0.2500 │10Y  │JP     │
+│2022-06-06│2.1960 │1Y   │US     │
+│2022-06-07│2.2060 │1Y   │US     │
+│2022-06-08│2.2450 │1Y   │US     │
+│2022-06-09│2.3000 │1Y   │US     │
+│2022-06-10│2.5070 │1Y   │US     │
+│2022-06-06│3.0368 │5Y   │US     │
+│2022-06-07│2.9906 │5Y   │US     │
+│2022-06-08│3.0355 │5Y   │US     │
+│2022-06-09│3.0702 │5Y   │US     │
+│2022-06-10│3.2637 │5Y   │US     │
+│2022-06-06│3.0399 │10Y  │US     │
+│2022-06-07│2.9791 │10Y  │US     │
+│2022-06-08│3.0270 │10Y  │US     │
+│2022-06-09│3.0455 │10Y  │US     │
+│2022-06-10│3.1649 │10Y  │US     │
+└──────────┴───────┴─────┴───────┘
+```
 
 ### Order rows
