@@ -686,8 +686,59 @@ In order to achieve that we need to change how ranking matrix looks like.
 └──────────┴───────┴─────┴───────┘
 ```
 
-We are almost there when it comes to ordering. We see tenor is ordered as `10Y - 1Y - 5Y` which
-lexicographically is correct but we may want to introduce custom ordering like `1Y - 5Y - 10Y`
-to cover time relation ('1Y' stands for one year, and so on).
-In order to do that we need to construct ranking based on this custom ordering and use it in constructing the new
+What if we want to ensure ascending ordering for `date` and descending for `tenor`. Once again we can manufacture
 ranking matrix.
+```j
+   rankingAsc=: i.!.0~ { /:@/:
+   rankingDesc=: i.!.0~ { /:@\:
+   ]ranking2=: ((<(<0),(<0)){rankingAsc&> }.week) ,0, ((<(<0),(<2)){rankingDesc&> }.week) ,: 0
+ 0  6 12 18 24 0 6 12 18 24  0  6 12 18 24  0  6 12 18 24 0 6 12 18 24  0  6 12 18 24
+ 0  0  0  0  0 0 0  0  0  0  0  0  0  0  0  0  0  0  0  0 0 0  0  0  0  0  0  0  0  0
+10 10 10 10 10 0 0  0  0  0 20 20 20 20 20 10 10 10 10 10 0 0  0  0  0 20 20 20 20 20
+ 0  0  0  0  0 0 0  0  0  0  0  0  0  0  0  0  0  0  0  0 0 0  0  0  0  0  0  0  0  0
+
+   NB. Notice we created first row from ascending ranking and third from descending ranking
+   $ranking2
+4 30
+   ranking2 orderFromRanking week
+┌──────────┬───────┬─────┬───────┐
+│date      │quote  │tenor│country│
+├──────────┼───────┼─────┼───────┤
+│2022-06-06│-0.0040│5Y   │JP     │
+│2022-06-06│3.0368 │5Y   │US     │
+│2022-06-06│-0.0800│1Y   │JP     │
+│2022-06-06│2.1960 │1Y   │US     │
+│2022-06-06│0.2400 │10Y  │JP     │
+│2022-06-06│3.0399 │10Y  │US     │
+│2022-06-07│0.0000 │5Y   │JP     │
+│2022-06-07│2.9906 │5Y   │US     │
+│2022-06-07│-0.0830│1Y   │JP     │
+│2022-06-07│2.2060 │1Y   │US     │
+│2022-06-07│0.2450 │10Y  │JP     │
+│2022-06-07│2.9791 │10Y  │US     │
+│2022-06-08│-0.0100│5Y   │JP     │
+│2022-06-08│3.0355 │5Y   │US     │
+│2022-06-08│-0.0850│1Y   │JP     │
+│2022-06-08│2.2450 │1Y   │US     │
+│2022-06-08│0.2450 │10Y  │JP     │
+│2022-06-08│3.0270 │10Y  │US     │
+│2022-06-09│-0.0100│5Y   │JP     │
+│2022-06-09│3.0702 │5Y   │US     │
+│2022-06-09│-0.0830│1Y   │JP     │
+│2022-06-09│2.3000 │1Y   │US     │
+│2022-06-09│0.2490 │10Y  │JP     │
+│2022-06-09│3.0455 │10Y  │US     │
+│2022-06-10│-0.0040│5Y   │JP     │
+│2022-06-10│3.2637 │5Y   │US     │
+│2022-06-10│-0.0900│1Y   │JP     │
+│2022-06-10│2.5070 │1Y   │US     │
+│2022-06-10│0.2500 │10Y  │JP     │
+│2022-06-10│3.1649 │10Y  │US     │
+└──────────┴───────┴─────┴───────┘
+   NB. the functions are also defined in j/algebra.ijs
+```
+
+We are almost there when it comes to ordering. We see tenor is ordered as `10Y - 1Y - 5Y` or
+`5Y - 1Y - 10Y` which lexicographically is correct but we may want to introduce custom ordering like `1Y - 5Y - 10Y`
+to cover time relation ('1Y' stands for one year, and so on).
+In order to do that we need to construct ranking matrix based on this custom ordering.
