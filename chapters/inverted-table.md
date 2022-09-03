@@ -467,7 +467,7 @@ Now let's request data slice for trading week from 2022-06-06 to 2022-06-10.
 ```
 
 ### Order rows
-The another useful task is ability to order by column. We can order by column using "/:" or "\:"
+The another useful task is ability to order by column. We can order by column using "/:" or "\\:"
 ```j
    ]ixs=: /: ;: >(<(<0),(<0)){ }. week
 0 5 10 15 20 25 1 6 11 16 21 26 2 7 12 17 22 27 3 8 13 18 23 28 4 9 14 19 24 29
@@ -633,7 +633,7 @@ Upon a close look we can discern patterns reflecting data columns represented in
 └──────────┴───────┴─────┴───────┘
 ```
 We see that table was ordered by `date` column at first. Then within the same `date` value
-rows are ordered by `quote` value in ascending order. As they are unique the ordering by the rest
+rows are ordered by `quote` value in ascending order (but in lexicographical sense!). As they are unique the ordering by the rest
 columns is omitted.
 
 We might want more fine-grained control over ordering. For example, we might request to
@@ -742,3 +742,135 @@ We are almost there when it comes to ordering. We see tenor is ordered as `10Y -
 `5Y - 1Y - 10Y` which lexicographically is correct but we may want to introduce custom ordering like `1Y - 5Y - 10Y`
 to cover time relation ('1Y' stands for one year, and so on).
 In order to do that we need to construct ranking matrix based on this custom ordering.
+
+```j
+   ]source=: >(<(<0),(<2)){ }. week
+1Y
+1Y
+1Y
+1Y
+1Y
+5Y
+5Y
+5Y
+5Y
+5Y
+10Y
+10Y
+10Y
+10Y
+10Y
+1Y
+1Y
+1Y
+1Y
+1Y
+5Y
+5Y
+5Y
+5Y
+5Y
+10Y
+10Y
+10Y
+10Y
+10Y
+   $source
+30 3
+
+   NB. Grade y up according to key x
+   gradeUp=: /:@i.
+   ]ixs=: 'abc' gradeUp 'abbca'
+0 4 1 2 3
+   ixs { 'abbca'
+aabbc
+
+   NB. Rank y rising, 0-origin, ties equal
+   rankUp=: i.~/:~
+   rankUp ixs { 'abbca'
+0 0 2 2 4
+
+   ]ord=: '10Y','5Y ',:'1Y '
+10Y
+5Y
+1Y
+
+   ord gradeUp source
+10 11 12 13 14 25 26 27 28 29 5 6 7 8 9 20 21 22 23 24 0 1 2 3 4 15 16 17 18 19
+   (ord gradeUp source) { source
+10Y
+10Y
+10Y
+10Y
+10Y
+10Y
+10Y
+10Y
+10Y
+10Y
+5Y
+5Y
+5Y
+5Y
+5Y
+5Y
+5Y
+5Y
+5Y
+5Y
+1Y
+1Y
+1Y
+1Y
+1Y
+1Y
+1Y
+1Y
+1Y
+1Y
+
+   ]customRankingTenor =: source i.~ ((ord gradeUp source) { source)
+20 20 20 20 20 10 10 10 10 10 0 0 0 0 0 20 20 20 20 20 10 10 10 10 10 0 0 0 0 0
+   ]ranking3=: ((<(<0),(<0)){rankingAsc&> }.week) ,0, customRankingTenor ,: 0
+ 0  6 12 18 24  0  6 12 18 24 0 6 12 18 24  0  6 12 18 24  0  6 12 18 24 0 6 12 18 24
+ 0  0  0  0  0  0  0  0  0  0 0 0  0  0  0  0  0  0  0  0  0  0  0  0  0 0 0  0  0  0
+20 20 20 20 20 10 10 10 10 10 0 0  0  0  0 20 20 20 20 20 10 10 10 10 10 0 0  0  0  0
+ 0  0  0  0  0  0  0  0  0  0 0 0  0  0  0  0  0  0  0  0  0  0  0  0  0 0 0  0  0  0
+   ranking3 orderFromRanking week
+┌──────────┬───────┬─────┬───────┐
+│date      │quote  │tenor│country│
+├──────────┼───────┼─────┼───────┤
+│2022-06-06│0.2400 │10Y  │JP     │
+│2022-06-06│3.0399 │10Y  │US     │
+│2022-06-06│-0.0040│5Y   │JP     │
+│2022-06-06│3.0368 │5Y   │US     │
+│2022-06-06│-0.0800│1Y   │JP     │
+│2022-06-06│2.1960 │1Y   │US     │
+│2022-06-07│0.2450 │10Y  │JP     │
+│2022-06-07│2.9791 │10Y  │US     │
+│2022-06-07│0.0000 │5Y   │JP     │
+│2022-06-07│2.9906 │5Y   │US     │
+│2022-06-07│-0.0830│1Y   │JP     │
+│2022-06-07│2.2060 │1Y   │US     │
+│2022-06-08│0.2450 │10Y  │JP     │
+│2022-06-08│3.0270 │10Y  │US     │
+│2022-06-08│-0.0100│5Y   │JP     │
+│2022-06-08│3.0355 │5Y   │US     │
+│2022-06-08│-0.0850│1Y   │JP     │
+│2022-06-08│2.2450 │1Y   │US     │
+│2022-06-09│0.2490 │10Y  │JP     │
+│2022-06-09│3.0455 │10Y  │US     │
+│2022-06-09│-0.0100│5Y   │JP     │
+│2022-06-09│3.0702 │5Y   │US     │
+│2022-06-09│-0.0830│1Y   │JP     │
+│2022-06-09│2.3000 │1Y   │US     │
+│2022-06-10│0.2500 │10Y  │JP     │
+│2022-06-10│3.1649 │10Y  │US     │
+│2022-06-10│-0.0040│5Y   │JP     │
+│2022-06-10│3.2637 │5Y   │US     │
+│2022-06-10│-0.0900│1Y   │JP     │
+│2022-06-10│2.5070 │1Y   │US     │
+└──────────┴───────┴─────┴───────┘
+
+  NB. We have table sorted first by date in ascending order, then by tenor by custom order '10Y - 5Y - 1Y'
+```
