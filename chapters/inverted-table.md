@@ -5,6 +5,11 @@
 2. [Select rows via index](#use-index-to-select-rows)
 3. [Filter columns](#filter-columns)
 4. [Order rows](#order-rows)
+5. [Update column](#update-column)
+6. [Add column](#add-column)
+6. [Collapse data and rotate dataframe](#collapse-data)
+7. [Work with two inverted tables](#two-tables)
+
 
 ### Rationale behind using inverted table
 
@@ -874,3 +879,8 @@ aabbc
 
   NB. We have table sorted first by date in ascending order, then by tenor by custom order '10Y - 5Y - 1Y'
 ```
+
+### Update column
+### Add column
+### Collapse data
+### Two tables
