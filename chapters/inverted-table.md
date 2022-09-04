@@ -884,7 +884,8 @@ The last task of ordering will be sorting the table by date in an ascending orde
 by tenor. We will need to realize the exchange of columns `country` and `tenor`, adopt ordering, and bring back initial column positions.
 Why exchange is needed here? Because `country` is after `tenor` the ranking would order the latter first. And we are into
 ordering the former first and only then the latter.
-```
+
+```j
    NB. see j/analysis.ijs
    ]week1=: (2,3) exchangeColumns week
 ┌──────────┬───────┬───────┬─────┐
@@ -999,6 +1000,110 @@ ordering the former first and only then the latter.
 ```
 
 ### Update column
+
+We can use update technique to realize column updating.
+```j
+updateColumnVals =: 4 : 0
+'ix col'=:x
+d=.{.$col
+assert. (d = (nrows y))
+size=.${.y
+assert. ( (ix >: (- size)) *. (ix < size) )
+cols=. {{ (<col) (<(<a:),(<ix)) } y }} }.y
+({.y),cols
+)
+   newcol=:<30 1 $ ".>(<(<0),(<1)){ }. week
+   ]week2=: (1;newcol) updateColumnVals week
+┌──────────┬──────┬─────┬───────┐
+│date      │quote │tenor│country│
+├──────────┼──────┼─────┼───────┤
+│2022-06-06│ _0.08│1Y   │JP     │
+│2022-06-07│_0.083│1Y   │JP     │
+│2022-06-08│_0.085│1Y   │JP     │
+│2022-06-09│_0.083│1Y   │JP     │
+│2022-06-10│ _0.09│1Y   │JP     │
+│2022-06-06│_0.004│5Y   │JP     │
+│2022-06-07│     0│5Y   │JP     │
+│2022-06-08│ _0.01│5Y   │JP     │
+│2022-06-09│ _0.01│5Y   │JP     │
+│2022-06-10│_0.004│5Y   │JP     │
+│2022-06-06│  0.24│10Y  │JP     │
+│2022-06-07│ 0.245│10Y  │JP     │
+│2022-06-08│ 0.245│10Y  │JP     │
+│2022-06-09│ 0.249│10Y  │JP     │
+│2022-06-10│  0.25│10Y  │JP     │
+│2022-06-06│ 2.196│1Y   │US     │
+│2022-06-07│ 2.206│1Y   │US     │
+│2022-06-08│ 2.245│1Y   │US     │
+│2022-06-09│   2.3│1Y   │US     │
+│2022-06-10│ 2.507│1Y   │US     │
+│2022-06-06│3.0368│5Y   │US     │
+│2022-06-07│2.9906│5Y   │US     │
+│2022-06-08│3.0355│5Y   │US     │
+│2022-06-09│3.0702│5Y   │US     │
+│2022-06-10│3.2637│5Y   │US     │
+│2022-06-06│3.0399│10Y  │US     │
+│2022-06-07│2.9791│10Y  │US     │
+│2022-06-08│ 3.027│10Y  │US     │
+│2022-06-09│3.0455│10Y  │US     │
+│2022-06-10│3.1649│10Y  │US     │
+└──────────┴──────┴─────┴───────┘
+```
+We can also change the column name.
+```j
+   updateColumnName =: 4 : 0
+'ix col'=:x
+size=.${.y
+assert. ( (ix >: (- size)) *. (ix < size) )
+h=. {{ (<col) ix } y }} {.y
+h,}.y
+)
+   week2=: (1;newcol) updateColumnVals week
+   ]week3=: (1;'quote as number') updateColumnName week2
+┌──────────┬───────────────┬─────┬───────┐
+│date      │quote as number│tenor│country│
+├──────────┼───────────────┼─────┼───────┤
+│2022-06-06│ _0.08         │1Y   │JP     │
+│2022-06-07│_0.083         │1Y   │JP     │
+│2022-06-08│_0.085         │1Y   │JP     │
+│2022-06-09│_0.083         │1Y   │JP     │
+│2022-06-10│ _0.09         │1Y   │JP     │
+│2022-06-06│_0.004         │5Y   │JP     │
+│2022-06-07│     0         │5Y   │JP     │
+│2022-06-08│ _0.01         │5Y   │JP     │
+│2022-06-09│ _0.01         │5Y   │JP     │
+│2022-06-10│_0.004         │5Y   │JP     │
+│2022-06-06│  0.24         │10Y  │JP     │
+│2022-06-07│ 0.245         │10Y  │JP     │
+│2022-06-08│ 0.245         │10Y  │JP     │
+│2022-06-09│ 0.249         │10Y  │JP     │
+│2022-06-10│  0.25         │10Y  │JP     │
+│2022-06-06│ 2.196         │1Y   │US     │
+│2022-06-07│ 2.206         │1Y   │US     │
+│2022-06-08│ 2.245         │1Y   │US     │
+│2022-06-09│   2.3         │1Y   │US     │
+│2022-06-10│ 2.507         │1Y   │US     │
+│2022-06-06│3.0368         │5Y   │US     │
+│2022-06-07│2.9906         │5Y   │US     │
+│2022-06-08│3.0355         │5Y   │US     │
+│2022-06-09│3.0702         │5Y   │US     │
+│2022-06-10│3.2637         │5Y   │US     │
+│2022-06-06│3.0399         │10Y  │US     │
+│2022-06-07│2.9791         │10Y  │US     │
+│2022-06-08│ 3.027         │10Y  │US     │
+│2022-06-09│3.0455         │10Y  │US     │
+│2022-06-10│3.1649         │10Y  │US     │
+└──────────┴───────────────┴─────┴───────┘
+```
+
+Please notice the memory imprint of raw table vs raw table with one column converted as number.
+```j
+   7!:5 ;: 'week week2 week3'
+2304 2304 2304
+
+   NB. it seems it does matter for memory size if we represent a given column as number of bytes.
+```
+
 ### Add column
 ### Collapse data
 ### Two tables
