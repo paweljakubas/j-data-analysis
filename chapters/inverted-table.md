@@ -877,8 +877,11 @@ aabbc
 │2022-06-10│2.5070 │1Y   │US     │
 └──────────┴───────┴─────┴───────┘
 
-  NB. We have table sorted first by date in ascending order, then by tenor by custom order '10Y - 5Y - 1Y'
+  NB. We have the table sorted first by date in ascending order, then by tenor by custom order '10Y - 5Y - 1Y'
 ```
+
+The last task of ordering will be sorting the table by date in an ascending order, then by country, and finally
+by tenor. We will need to bring exchange columns `country` and `tenor`, adopt ordering, and bring back initial column positions.
 
 ### Update column
 ### Add column
