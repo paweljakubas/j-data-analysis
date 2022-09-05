@@ -1186,5 +1186,47 @@ h,v
 └──────────┴───────┴─────┴───────┴──────┘
 ```
 
+That was trivial. Now let's add something that could be very useful, for example the date of the week basing
+on `date` column.
+
+```j
+   NB. Let's first introduce string splitting function
+   strsplit=: #@[ }.each [ (E. <;.1 ]) ,
+   '-' strsplit '2014-20'
+┌────┬──┐
+│2014│20│
+└────┴──┘
+
+   NB. In order to look for calculating the day of the week (I don't see the function in types/datetime)
+   NB. I will set reference day (5th Sept 2022 is Mon) and for any day having a format 'YYYY-MM-DD' we
+   NB. will convert it to day number. Then we will calculate the remainder of a requested day and reference day
+   NB. when dividing by 7.
+
+   load 'types/datetime'
+   dayOfWeek=: 3 : 0
+days=.'Mon','Tue','Wed','Thu','Fri','Sat',:'Sun'
+ref=:toDayNo (,".>'-' strsplit '2022-09-05'),0,0,0
+d=:toDayNo (,".>'-' strsplit y),0,0,0
+if. (ref > d) do.
+(- 7 | ref - d) { days
+else.
+(7 | d - ref) { days
+end.
+)
+   dayOfWeek '2022-09-05'
+Mon
+   dayOfWeek '2022-09-04'
+Sun
+   dayOfWeek '2022-09-05'
+Mon
+   dayOfWeek '2022-09-06'
+Tue
+   dayOfWeek '2022-09-12'
+Mon
+   dayOfWeek '2022-04-17'
+Sun
+
+```
+
 ### Collapse data
 ### Two tables
