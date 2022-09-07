@@ -7,8 +7,9 @@
 4. [Order rows](#order-rows)
 5. [Update column](#update-column)
 6. [Add column](#add-column)
-6. [Collapse data and rotate dataframe](#collapse-data)
-7. [Work with two inverted tables](#two-tables)
+7. [Aggregate](#aggregate)
+8. [Collapse data and rotate dataframe](#collapse-data)
+9. [Work with two inverted tables](#two-tables)
 
 
 ### Rationale behind using inverted table
@@ -1186,7 +1187,7 @@ h,v
 └──────────┴───────┴─────┴───────┴──────┘
 ```
 
-That was trivial. Now let's add something that could be very useful, for example the date of the week basing
+That was trivial. Now let's add something that could be very useful, for example, the week day basing
 on `date` column.
 
 ```j
@@ -1337,6 +1338,25 @@ Sun
 │2022-06-10│2.5070 │1Y   │US     │Fri    │
 └──────────┴───────┴─────┴───────┴───────┘
 ```
+We can also add column determining week number in a given year basing on `date` column.
+The calculation of weekno is not straightforward though. ISO 8601 defines a standard for the representation of dates,
+times and time zones. It defines weeks that start on a Monday. It also says Week 1 of a year is the one which contains
+at least 4 days from the given year. Consequently, the 29th, 30th and 31st of December 20xx could be in week 1 of 20xy
+(where xy = xx + 1), and the 1st, 2nd and 3rd of January 20xy could all be in the last week of 20xx.
+Further, there can be a week 53.
+```j
+   dayOfWeek (>0{'-' strsplit '2014-20'),'-1','-1'
+Wed
 
+   10 <.@% 4
+2
+   10 <.@% 5
+2
+   10 <.@% 6
+1
+
+```
+
+### Aggregate
 ### Collapse data
 ### Two tables

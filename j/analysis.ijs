@@ -460,3 +460,19 @@ NB. │2022-06-08│3.0270 │10Y  │US     │27    │
 NB. │2022-06-09│3.0455 │10Y  │US     │28    │
 NB. │2022-06-10│3.1649 │10Y  │US     │29    │
 NB. └──────────┴───────┴─────┴───────┴──────┘
+
+NB. String concat, x is string connector, y boxed strings
+strconcat=: #@[ }. <@[ ;@,. ]
+NB. Example
+NB.    '-' strconcat ;: 'one two three'
+NB. one-two-three
+NB.    '-' strconcat ":each(1;2;3)
+NB. 1-2-3
+
+NB. String split, x is string connector against which the split occur, y string
+strsplit=: #@[ }.each [ (E. <;.1 ]) ,
+NB. Example
+NB.    '-' strsplit '2014-20'
+NB. ┌────┬──┐
+NB. │2014│20│
+NB. └────┴──┘
