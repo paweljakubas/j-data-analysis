@@ -1345,7 +1345,7 @@ at least 4 days from the given year. Consequently, the 29th, 30th and 31st of De
 (where xy = xx + 1), and the 1st, 2nd and 3rd of January 20xy could all be in the last week of 20xx.
 Further, there can be a week 53.
 ```j
-   dayOfWeek (>0{'-' strsplit '2014-20'),'-1','-1'
+   dayOfWeek (>0{'-' strsplit '2014-20-11'),'-1','-1'
 Wed
 
    10 <.@% 4
@@ -1355,6 +1355,83 @@ Wed
    10 <.@% 6
 1
 
+firstDayFirstWeek=: 3 : 0
+begYearDayNo=.toDayNo y,1,1,0,0,0
+begYear=. (":y),'-1-1'
+begYearDay=.dayOfWeek begYear
+if. begYearDay = 'Mon' do.
+begYearDayNo
+elseif. begYearDay = 'Tue' do.
+<:begYearDayNo
+elseif. begYearDay = 'Wed' do.
+<:<:begYearDayNo
+elseif. begYearDay = 'Thu' do.
+<:<:<:begYearDayNo
+elseif. begYearDay = 'Fri' do.
+>:>:>:begYearDayNo
+elseif. begYearDay = 'Sat' do.
+>:>:begYearDayNo
+else.
+>:begYearDayNo
+end.
+)
+   firstDayFirstWeek 2010
+76704
+   firstDayFirstWeek 2009
+76335
+
+weekNo=: 3 : 0
+year=. >0{'-' strsplit y
+begYear=. year,'-1-1'
+begYearDayNo=.toDayNo (".year),1,1,0,0,0
+begYearDay=.dayOfWeek begYear
+dayNo=.toDayNo (,".>'-' strsplit y),0,0,0
+if. begYearDay = 'Mon' do.
+>: (dayNo - begYearDayNo) <.@% 7
+elseif. begYearDay = 'Tue' do.
+>: (dayNo - <:begYearDayNo) <.@% 7
+elseif. begYearDay = 'Wed' do.
+>: (dayNo - <:<:begYearDayNo) <.@% 7
+elseif. begYearDay = 'Thu' do.
+>: (dayNo - <:<:<:begYearDayNo) <.@% 7
+elseif. begYearDay = 'Fri' do.
+  if. (dayNo < >:>:>:begYearDayNo) do.
+  >: (dayNo - (firstDayFirstWeek <:".year)) <.@% 7
+  else.
+  >: (dayNo - >:>:>:begYearDayNo) <.@% 7
+  end.
+elseif. begYearDay = 'Sat' do.
+  if. (dayNo < >:>:begYearDayNo) do.
+  >: (dayNo - (firstDayFirstWeek <:".year)) <.@% 7
+  else.
+  >: (dayNo - >:>:begYearDayNo) <.@% 7
+  end.
+else.
+  if. (dayNo < >:begYearDayNo) do.
+  >: (dayNo - (firstDayFirstWeek <:".year)) <.@% 7
+  else.
+  >: (dayNo - >:begYearDayNo) <.@% 7
+  end.
+end.
+)
+   weekNo '2010-01-01'
+53
+   dayOfWeek '2010-01-01'
+Fri
+   dayOfWeek '2011-01-01'
+Sat
+   weekNo '2011-01-01'
+52
+   weekNo '2012-01-01'
+52
+   dayOfWeek '2012-01-01'
+Sun
+   dayOfWeek '2013-01-01'
+Tue
+   weekNo '2013-01-01'
+1
+   weekNo '2013-06-01'
+22
 ```
 
 ### Aggregate
