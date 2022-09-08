@@ -481,9 +481,9 @@ load 'types/datetime'
 
 NB. Day of week of a given datetime value given as y
 dayOfWeek=: 3 : 0
-days=.'Mon','Tue','Wed','Thu','Fri','Sat',:'Sun'
-ref=:toDayNo (,".>'-' strsplit '2022-09-05'),0,0,0
-d=:<.!.0 toDayNo y
+days=. 'Mon','Tue','Wed','Thu','Fri','Sat',:'Sun'
+ref=. toDayNo (,".>'-' strsplit '2022-09-05'),0,0,0
+d=. <.!.0 toDayNo y
 if. (ref > d) do.
 (- 7 | ref - d) { days
 else.
@@ -500,3 +500,101 @@ NB.    ]d=: 6!:0 ''
 NB. 2022 9 8 19 19 15.7767
 NB.    dayOfWeek d
 NB. Thu
+
+NB. First day of the first week of a given year y
+firstDayOfFirstWeekOfYear=: 3 : 0
+begYearDayNo=.toDayNo y,1,1,0,0,0
+begYearDay=.dayOfWeek toDateTime begYearDayNo
+if. begYearDay = 'Mon' do.
+begYearDayNo
+elseif. begYearDay = 'Tue' do.
+<:begYearDayNo
+elseif. begYearDay = 'Wed' do.
+<:<:begYearDayNo
+elseif. begYearDay = 'Thu' do.
+<:<:<:begYearDayNo
+elseif. begYearDay = 'Fri' do.
+>:>:>:begYearDayNo
+elseif. begYearDay = 'Sat' do.
+>:>:begYearDayNo
+else.
+>:begYearDayNo
+end.
+)
+NB. Example
+NB.    firstDayOfFirstWeekOfYear 2010
+NB. 76704
+NB.    firstDayOfFirstWeekOfYear 2009
+NB. 76335
+
+NB. Week number of a given datetime y
+NB. ISO 8601 defines a standard for the representation of dates, times and time zones.
+NB. It defines weeks that start on a Monday. It also says Week 1 of a year is the one
+NB. which contains at least 4 days from the given year. Consequently, the 29th, 30th and
+NB. 31st of December 20xx could be in week 1 of 20xy (where xy = xx + 1), and the 1st,
+NB. 2nd and 3rd of January 20xy could all be in the last week of 20xx. Further, there can be a week 53.
+weekNo=: 3 : 0
+year=. 0{y
+begYear=. year,1,1,0,0,0
+begYearDayNo=.toDayNo begYear
+begYearDay=.dayOfWeek begYear
+dayNo=. <.!.0 toDayNo y
+if. begYearDay = 'Mon' do.
+>: (dayNo - begYearDayNo) <.@% 7
+elseif. begYearDay = 'Tue' do.
+>: (dayNo - <:begYearDayNo) <.@% 7
+elseif. begYearDay = 'Wed' do.
+>: (dayNo - <:<:begYearDayNo) <.@% 7
+elseif. begYearDay = 'Thu' do.
+>: (dayNo - <:<:<:begYearDayNo) <.@% 7
+elseif. begYearDay = 'Fri' do.
+  if. (dayNo < >:>:>:begYearDayNo) do.
+  >: (dayNo - (firstDayOfFirstWeekOfYear <:year)) <.@% 7
+  else.
+  >: (dayNo - >:>:>:begYearDayNo) <.@% 7
+  end.
+elseif. begYearDay = 'Sat' do.
+  if. (dayNo < >:>:begYearDayNo) do.
+  >: (dayNo - (firstDayOfFirstWeekOfYear <:year)) <.@% 7
+  else.
+  >: (dayNo - >:>:begYearDayNo) <.@% 7
+  end.
+else.
+  if. (dayNo < >:begYearDayNo) do.
+  >: (dayNo - (firstDayOfFirstWeekOfYear <:year)) <.@% 7
+  else.
+  >: (dayNo - >:begYearDayNo) <.@% 7
+  end.
+end.
+)
+NB. Example
+NB.    ]d=: 6!:0 ''
+NB. 2022 9 8 20 18 48.9199
+NB.    dayOfWeek d
+NB. Thu
+NB.    weekNo d
+NB. 36
+NB.    ]d=: toDateTime toDayNo (,".>'-' strsplit '2010-01-01'),0,0,0
+NB. 2010 1 1 0 0 0
+NB.    dayOfWeek d
+NB. Fri
+NB.    weekNo d
+NB. 53
+NB.    ]d=: toDateTime toDayNo (,".>'-' strsplit '2011-01-01'),0,0,0
+NB. 2011 1 1 0 0 0
+NB.    dayOfWeek d
+NB. Sat
+NB.    weekNo d
+NB. 52
+NB.    ]d=: toDateTime toDayNo (,".>'-' strsplit '2012-01-01'),0,0,0
+NB. 2012 1 1 0 0 0
+NB.    dayOfWeek d
+NB. Sun
+NB.    weekNo d
+NB. 52
+NB.    ]d=: toDateTime toDayNo (,".>'-' strsplit '2013-01-01'),0,0,0
+NB. 2013 1 1 0 0 0
+NB.    dayOfWeek d
+NB. Tue
+NB.    weekNo d
+NB. 1
