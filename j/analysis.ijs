@@ -476,3 +476,27 @@ NB.    '-' strsplit '2014-20'
 NB. ┌────┬──┐
 NB. │2014│20│
 NB. └────┴──┘
+
+load 'types/datetime'
+
+NB. Day of week of a given datetime value given as y
+dayOfWeek=: 3 : 0
+days=.'Mon','Tue','Wed','Thu','Fri','Sat',:'Sun'
+ref=:toDayNo (,".>'-' strsplit '2022-09-05'),0,0,0
+d=:<.!.0 toDayNo y
+if. (ref > d) do.
+(- 7 | ref - d) { days
+else.
+(7 | d - ref) { days
+end.
+)
+NB. Example
+NB.    d=: toDateTime toDayNo (,".>'-' strsplit '2022-09-05'),0,0,0
+NB.    d
+NB. 2022 9 5 0 0 0
+NB.    dayOfWeek d
+NB. Mon
+NB.    ]d=: 6!:0 ''
+NB. 2022 9 8 19 19 15.7767
+NB.    dayOfWeek d
+NB. Thu

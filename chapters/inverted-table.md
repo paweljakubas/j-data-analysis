@@ -3,13 +3,15 @@
 ## Contents
 1. [Why to use inverted table](#rationale-behind-using-inverted-table)
 2. [Select rows via index](#use-index-to-select-rows)
-3. [Filter columns](#filter-columns)
+3. [Filter rows](#filter-rows)
 4. [Order rows](#order-rows)
 5. [Update column](#update-column)
 6. [Add column](#add-column)
-7. [Aggregate](#aggregate)
-8. [Collapse data and rotate dataframe](#collapse-data)
-9. [Work with two inverted tables](#two-tables)
+7. [Remove column](#remove-column)
+8. [Grouping](#grouping)
+9. [Aggregate](#aggregate)
+10. [Collapse data and rotate dataframe](#collapse-data)
+11. [Work with two inverted tables](#two-tables)
 
 
 ### Rationale behind using inverted table
@@ -365,7 +367,7 @@ What will follow is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted
 └──────────┴───────┴─────┴───────┘
 ```
 
-### Filter columns
+### Filter rows
 
 Let's say we want to filter out all rows that have quotes less than 3.4.
 What we can do to achieve that is to specify row indices that have `quote >= 3.4`.
@@ -746,7 +748,7 @@ ranking matrix.
 
 We are almost there when it comes to ordering. We see tenor is ordered as `10Y - 1Y - 5Y` or
 `5Y - 1Y - 10Y` which lexicographically is correct but we may want to introduce custom ordering like `1Y - 5Y - 10Y`
-to cover time relation ('1Y' stands for one year, and so on).
+to make it chronological (`1Y` stands for one year, and so on).
 In order to do that we need to construct ranking matrix based on this custom ordering.
 
 ```j
@@ -1204,7 +1206,7 @@ on `date` column.
    NB. when dividing by 7.
 
    load 'types/datetime'
-   dayOfWeek=: 3 : 0
+   dayOfWeek1=: 3 : 0
 days=.'Mon','Tue','Wed','Thu','Fri','Sat',:'Sun'
 ref=:toDayNo (,".>'-' strsplit '2022-09-05'),0,0,0
 d=:toDayNo (,".>'-' strsplit y),0,0,0
@@ -1214,20 +1216,20 @@ else.
 (7 | d - ref) { days
 end.
 )
-   dayOfWeek '2022-09-05'
+   dayOfWeek1 '2022-09-05'
 Mon
-   dayOfWeek '2022-09-04'
+   dayOfWeek1 '2022-09-04'
 Sun
-   dayOfWeek '2022-09-05'
+   dayOfWeek1 '2022-09-05'
 Mon
-   dayOfWeek '2022-09-06'
+   dayOfWeek1 '2022-09-06'
 Tue
-   dayOfWeek '2022-09-12'
+   dayOfWeek1 '2022-09-12'
 Mon
-   dayOfWeek '2022-04-17'
+   dayOfWeek1 '2022-04-17'
 Sun
 
-   ]weekday=: <dayOfWeek"1 >(<(<0),(<0)){ }. week
+   ]weekday=: <dayOfWeek1"1 >(<(<0),(<0)){ }. week
 ┌───┐
 │Mon│
 │Tue│
@@ -1260,6 +1262,73 @@ Sun
 │Thu│
 │Fri│
 └───┘
+
+   NB. Alternatively we can use more flexible functionality from j/analysis.ijs
+   {{ toDateTime toDayNo (,".>'-' strsplit y),0,0,0 }}"1 >(<(<0),(<0)){ }. week
+2022 6  6 0 0 0
+2022 6  7 0 0 0
+2022 6  8 0 0 0
+2022 6  9 0 0 0
+2022 6 10 0 0 0
+2022 6  6 0 0 0
+2022 6  7 0 0 0
+2022 6  8 0 0 0
+2022 6  9 0 0 0
+2022 6 10 0 0 0
+2022 6  6 0 0 0
+2022 6  7 0 0 0
+2022 6  8 0 0 0
+2022 6  9 0 0 0
+2022 6 10 0 0 0
+2022 6  6 0 0 0
+2022 6  7 0 0 0
+2022 6  8 0 0 0
+2022 6  9 0 0 0
+2022 6 10 0 0 0
+2022 6  6 0 0 0
+2022 6  7 0 0 0
+2022 6  8 0 0 0
+2022 6  9 0 0 0
+2022 6 10 0 0 0
+2022 6  6 0 0 0
+2022 6  7 0 0 0
+2022 6  8 0 0 0
+2022 6  9 0 0 0
+2022 6 10 0 0 0
+   ]weekday=: <{{ dayOfWeek toDateTime toDayNo (,".>'-' strsplit y),0,0,0 }}"1 >(<(<0),(<0)){ }. week
+┌───┐
+│Mon│
+│Tue│
+│Wed│
+│Thu│
+│Fri│
+│Mon│
+│Tue│
+│Wed│
+│Thu│
+│Fri│
+│Mon│
+│Tue│
+│Wed│
+│Thu│
+│Fri│
+│Mon│
+│Tue│
+│Wed│
+│Thu│
+│Fri│
+│Mon│
+│Tue│
+│Wed│
+│Thu│
+│Fri│
+│Mon│
+│Tue│
+│Wed│
+│Thu│
+│Fri│
+└───┘
+
    ]week1=: ('weekday';weekday) addColumn week
 ┌──────────┬───────┬─────┬───────┬───────┐
 │date      │quote  │tenor│country│weekday│
@@ -1345,7 +1414,7 @@ at least 4 days from the given year. Consequently, the 29th, 30th and 31st of De
 (where xy = xx + 1), and the 1st, 2nd and 3rd of January 20xy could all be in the last week of 20xx.
 Further, there can be a week 53.
 ```j
-   dayOfWeek (>0{'-' strsplit '2014-20-11'),'-1','-1'
+   dayOfWeek1 (>0{'-' strsplit '2014-20-11'),'-1','-1'
 Wed
 
    10 <.@% 4
@@ -1355,10 +1424,10 @@ Wed
    10 <.@% 6
 1
 
-firstDayFirstWeek=: 3 : 0
+   firstDayFirstWeek=: 3 : 0
 begYearDayNo=.toDayNo y,1,1,0,0,0
 begYear=. (":y),'-1-1'
-begYearDay=.dayOfWeek begYear
+begYearDay=.dayOfWeek1 begYear
 if. begYearDay = 'Mon' do.
 begYearDayNo
 elseif. begYearDay = 'Tue' do.
@@ -1380,7 +1449,7 @@ end.
    firstDayFirstWeek 2009
 76335
 
-weekNo=: 3 : 0
+   weekNo=: 3 : 0
 year=. >0{'-' strsplit y
 begYear=. year,'-1-1'
 begYearDayNo=.toDayNo (".year),1,1,0,0,0
@@ -1723,7 +1792,16 @@ Tue
 └──────────┴───────┴─────┴───────┴──────┘
 ```
 
+Now let's take 10Y tenors for the US, and add columns that in each week separately will produce
+maximum and minium quote for a given date. So in Mon a given quote will be both max and
+min, in Tue it will be max and min calculated from Mon and Tue of a given week, etc.
+We will use fold to realize that, the technique we will use many times in the future.
+```j
 
+```
+
+### Remove column
+### Grouping
 ### Aggregate
 ### Collapse data
 ### Two tables
