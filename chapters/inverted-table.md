@@ -2320,22 +2320,7 @@ ixss rowsFromTable y
 │2022-06-17│3.2313 │10Y  │US     │24    │Fri    │
 └──────────┴───────┴─────┴───────┴──────┴───────┘
 
-
-
-
-  takeSlice=: 4 : 0
-'ix vals'=:x
-size=.${.y
-assert. ( (ix >: (- size)) *. (ix < size) )
-if. ($".>{.vals) = 0 do.
-  ixs=. {{ vals e.~ y }} >.each>(<(<0),(<ix)){ }.y
-else.
-  ixs=. {{ vals e.~ y }} ;:>(<(<0),(<ix)){ }.y
-end.
-ixss=. (,ixs) # i.nrows y
-ixss rowsFromTable y
-)
-
+  NB. One can also use takeSlice from j/analysis.ijs
 ```
 
 More sophisticated grouping will require joining capabilities and is covered in
