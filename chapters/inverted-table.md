@@ -12,7 +12,7 @@
 9. [Aggregate](#aggregating)
 10. [Collapse data and rotate dataframe](#folding-data)
 11. [Work with two inverted tables](#two-tables)
-
+12. [Advanced grouping](#advanced-grouping)
 
 ### Rationale behind using inverted table
 
@@ -2170,17 +2170,17 @@ So we have grouping by taking all values and each group is tagged by a single va
 What about groups that are depicted by several values, and one value can be present in several groups?
 
 ```j
-groupByNumeric=: 4 : 0
+   groupByNumeric=: 4 : 0
 if. 1 = $x do.
-vals=. <.each ,{./.~ >(<(<0),(<x)){ }. y
+  vals=. <.each ,{./.~ >(<(<0),(<x)){ }. y
 else.
-vals=. }.x
+  vals=. }.x
 end.
 itable=:y
 ix=:x
 (<(<a:),(<<0)) { (<0$0) ]F.. {{ y,. x ,: <(2;x) takeSliceNumeric itable }} vals
 )
-      2 groupByNumeric bonds4
+   2 groupByNumeric bonds4
 ┌───────────────────────────┬───────────────────────────┬───────────────────────────┐
 │22                         │23                         │24                         │
 ├───────────────────────────┼───────────────────────────┼───────────────────────────┤
@@ -2216,7 +2216,132 @@ ix=:x
 ```
 
 In the last example we may wish to maintain `weekno` column.
+The grouping we can also be defined for string values.
+
+```j
+   NB. Let's add dayOfWeek column to bonds3
+   ]bonds3=: ixss rowsFromTable bonds2
+┌──────────┬───────┬─────┬───────┬──────┐
+│date      │quote  │tenor│country│weekno│
+├──────────┼───────┼─────┼───────┼──────┤
+│2022-05-30│2.8097 │10Y  │US     │22    │
+│2022-05-31│2.8495 │10Y  │US     │22    │
+│2022-06-01│2.9113 │10Y  │US     │22    │
+│2022-06-02│2.9131 │10Y  │US     │22    │
+│2022-06-03│2.9405 │10Y  │US     │22    │
+│2022-06-06│3.0399 │10Y  │US     │23    │
+│2022-06-07│2.9791 │10Y  │US     │23    │
+│2022-06-08│3.0270 │10Y  │US     │23    │
+│2022-06-09│3.0455 │10Y  │US     │23    │
+│2022-06-10│3.1649 │10Y  │US     │23    │
+│2022-06-13│3.3617 │10Y  │US     │24    │
+│2022-06-14│3.4791 │10Y  │US     │24    │
+│2022-06-15│3.2915 │10Y  │US     │24    │
+│2022-06-16│3.1952 │10Y  │US     │24    │
+│2022-06-17│3.2313 │10Y  │US     │24    │
+└──────────┴───────┴─────┴───────┴──────┘
+   ]weekday=: <{{ dayOfWeek toDateTime toDayNo (,".>'-' strsplit y),0,0,0 }}"1 >(<(<0),(<0)){ }. bonds3
+┌───┐
+│Mon│
+│Tue│
+│Wed│
+│Thu│
+│Fri│
+│Mon│
+│Tue│
+│Wed│
+│Thu│
+│Fri│
+│Mon│
+│Tue│
+│Wed│
+│Thu│
+│Fri│
+└───┘
+   ]bonds4=: ('weekday';weekday) addColumn bonds3
+┌──────────┬───────┬─────┬───────┬──────┬───────┐
+│date      │quote  │tenor│country│weekno│weekday│
+├──────────┼───────┼─────┼───────┼──────┼───────┤
+│2022-05-30│2.8097 │10Y  │US     │22    │Mon    │
+│2022-05-31│2.8495 │10Y  │US     │22    │Tue    │
+│2022-06-01│2.9113 │10Y  │US     │22    │Wed    │
+│2022-06-02│2.9131 │10Y  │US     │22    │Thu    │
+│2022-06-03│2.9405 │10Y  │US     │22    │Fri    │
+│2022-06-06│3.0399 │10Y  │US     │23    │Mon    │
+│2022-06-07│2.9791 │10Y  │US     │23    │Tue    │
+│2022-06-08│3.0270 │10Y  │US     │23    │Wed    │
+│2022-06-09│3.0455 │10Y  │US     │23    │Thu    │
+│2022-06-10│3.1649 │10Y  │US     │23    │Fri    │
+│2022-06-13│3.3617 │10Y  │US     │24    │Mon    │
+│2022-06-14│3.4791 │10Y  │US     │24    │Tue    │
+│2022-06-15│3.2915 │10Y  │US     │24    │Wed    │
+│2022-06-16│3.1952 │10Y  │US     │24    │Thu    │
+│2022-06-17│3.2313 │10Y  │US     │24    │Fri    │
+└──────────┴───────┴─────┴───────┴──────┴───────┘
+    NB. Let's group with values `Mon` and `Fri`.
+   takeSliceString=: 4 : 0
+'ix vals'=:x
+size=.${.y
+assert. ( (ix >: (- size)) *. (ix < size) )
+ixs=. {{ vals e.~ y }} ;:>(<(<0),(<ix)){ }.y
+ixss=. (,ixs) # i.nrows y
+ixss rowsFromTable y
+)
+   (5;<(<'Mon'))
+┌─┬─────┐
+│5│┌───┐│
+│ ││Mon││
+│ │└───┘│
+└─┴─────┘
+   (5;<(<'Mon')) takeSliceString bonds4
+┌──────────┬───────┬─────┬───────┬──────┬───────┐
+│date      │quote  │tenor│country│weekno│weekday│
+├──────────┼───────┼─────┼───────┼──────┼───────┤
+│2022-05-30│2.8097 │10Y  │US     │22    │Mon    │
+│2022-06-06│3.0399 │10Y  │US     │23    │Mon    │
+│2022-06-13│3.3617 │10Y  │US     │24    │Mon    │
+└──────────┴───────┴─────┴───────┴──────┴───────┘
+
+   (5;<('Mon';'Fri'))
+┌─┬─────────┐
+│5│┌───┬───┐│
+│ ││Mon│Fri││
+│ │└───┴───┘│
+└─┴─────────┘
+   (5;<('Mon';'Fri')) takeSliceString bonds4
+┌──────────┬───────┬─────┬───────┬──────┬───────┐
+│date      │quote  │tenor│country│weekno│weekday│
+├──────────┼───────┼─────┼───────┼──────┼───────┤
+│2022-05-30│2.8097 │10Y  │US     │22    │Mon    │
+│2022-06-03│2.9405 │10Y  │US     │22    │Fri    │
+│2022-06-06│3.0399 │10Y  │US     │23    │Mon    │
+│2022-06-10│3.1649 │10Y  │US     │23    │Fri    │
+│2022-06-13│3.3617 │10Y  │US     │24    │Mon    │
+│2022-06-17│3.2313 │10Y  │US     │24    │Fri    │
+└──────────┴───────┴─────┴───────┴──────┴───────┘
+
+
+
+
+  takeSlice=: 4 : 0
+'ix vals'=:x
+size=.${.y
+assert. ( (ix >: (- size)) *. (ix < size) )
+if. ($".>{.vals) = 0 do.
+  ixs=. {{ vals e.~ y }} >.each>(<(<0),(<ix)){ }.y
+else.
+  ixs=. {{ vals e.~ y }} ;:>(<(<0),(<ix)){ }.y
+end.
+ixss=. (,ixs) # i.nrows y
+ixss rowsFromTable y
+)
+
+```
+
+More sophisticated grouping will require joining capabilities and is covered in
+section [Advanced grouping](#advanced-grouping).
 
 ### Aggregating
 ### Folding data
 ### Two tables
+### Advanced grouping

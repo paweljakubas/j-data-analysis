@@ -602,8 +602,8 @@ NB. 1
 NB. Remove column from inverted table
 NB. x is index, y is table
 removeColumn=: 4 : 0
-cols=. nrows y
-assert. ( (x >: 0) *. (x < cols) )
+size=.${.y
+assert. ( (x >: (- size)) *. (x < size) )
 h=. (<(<<x)){{. y
 c=. (<(<a:),(<<x)){}. y
 h,c
