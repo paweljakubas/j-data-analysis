@@ -2170,15 +2170,16 @@ What about groups that are depicted by several values, and one value can be pres
 
 ```j
    groupByNumeric=: 4 : 0
-if. 1 = $x do.
+if. 1 = #x do.
   vals=. <.each ,{./.~ >(<(<0),(<x)){ }. y
 else.
   vals=. }.x
 end.
-itable=:y
-ix=:x
-(<(<a:),(<<0)) { (<0$0) ]F.. {{ y,. x ,: <(2;x) takeSliceNumeric itable }} vals
+tmp_itable=:y
+tmp_ix=:>{.x
+(<(<a:),(<<0)) { (<0$0) ]F.. {{ y,. x ,: <(tmp_ix;x) takeSliceNumeric tmp_itable }} vals
 )
+
    2 groupByNumeric bonds4
 ┌───────────────────────────┬───────────────────────────┬───────────────────────────┐
 │22                         │23                         │24                         │
