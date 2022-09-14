@@ -793,11 +793,6 @@ In order to do that we need to construct ranking matrix based on this custom ord
    ixs { 'abbca'
 aabbc
 
-   NB. Rank y rising, 0-origin, ties equal
-   rankUp=: i.~/:~
-   rankUp ixs { 'abbca'
-0 0 2 2 4
-
    ]ord=: '10Y','5Y ',:'1Y '
 10Y
 5Y
@@ -885,8 +880,8 @@ aabbc
 
 The last task of ordering will be sorting the table by date in an ascending order, then by country, and finally
 by tenor. We will need to realize the exchange of columns `country` and `tenor`, adopt ordering, and bring back initial column positions.
-Why exchange is needed here? Because `country` is after `tenor` the ranking would order the latter first. And we are into
-ordering the former first and only then the latter.
+Why exchange is needed here? Because `country` is after `tenor` the ranking would order the latter first. And we are after
+ordering of the former first and only then the latter.
 
 ```j
    NB. see j/analysis.ijs
@@ -965,6 +960,7 @@ ordering the former first and only then the latter.
 │2022-06-10│3.2637 │US     │5Y   │
 │2022-06-10│2.5070 │US     │1Y   │
 └──────────┴───────┴───────┴─────┘
+   NB. Restoring initial column positions
    (2,3) exchangeColumns (ranking4 orderFromRanking week1)
 ┌──────────┬───────┬─────┬───────┐
 │date      │quote  │tenor│country│
@@ -1106,6 +1102,9 @@ Please notice the memory imprint of raw table vs raw table with one column conve
 
    NB. it seems it does matter for memory size if we represent a given column as number of bytes.
 ```
+
+After loading CSV all columns are literals, and we can have helper function to cast a given column to a number
+(if possible). `columnAsNum` defined in j/analysis.ijs expose just exactly what was done above.
 
 ### Add column
 
@@ -2194,7 +2193,11 @@ ix=:x
 ││2022-06-03│2.9405 │22    │││2022-06-10│3.1649 │23    │││2022-06-17│3.2313 │24    ││
 │└──────────┴───────┴──────┘│└──────────┴───────┴──────┘│└──────────┴───────┴──────┘│
 └───────────────────────────┴───────────────────────────┴───────────────────────────┘
-      input groupByNumeric bonds4
+   ]input=: (<2),(<22,23),(<23),<23,24
+┌─┬─────┬──┬─────┐
+│2│22 23│23│23 24│
+└─┴─────┴──┴─────┘
+   input groupByNumeric bonds4
 ┌───────────────────────────┬───────────────────────────┬───────────────────────────┐
 │22 23                      │23                         │23 24                      │
 ├───────────────────────────┼───────────────────────────┼───────────────────────────┤
