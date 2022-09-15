@@ -847,7 +847,36 @@ NB. └──────┴─────────────────�
 NB.    ((4;23);({{ y e. x }}`'')) condIxs bonds2
 NB. 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 
-NB. Udate a given column x of inverted table y with the numeric cast of its literal values
+NB. Checks if an inverted table y is empty, ie. does not have any rows
+isTableEmpty=: 3 : 0
+cols=. #{. y
+tmp_y=: y
+(+/ {{ #>(<(<0),(<y)){ }. tmp_y }}"0 i.cols) = 0
+)
+NB. Example
+NB.    ]bonds1=: 10 randomRowsFromTable bonds
+NB. ┌──────────┬───────┬─────┬───────┐
+NB. │date      │quote  │tenor│country│
+NB. ├──────────┼───────┼─────┼───────┤
+NB. │2022-06-14│0.2560 │10Y  │JP     │
+NB. │2022-06-10│2.5070 │1Y   │US     │
+NB. │2022-05-31│0.0040 │5Y   │JP     │
+NB. │2022-06-07│2.9906 │5Y   │US     │
+NB. │2022-06-01│-0.0040│5Y   │JP     │
+NB. │2022-06-17│2.8870 │1Y   │US     │
+NB. │2022-06-09│3.0455 │10Y  │US     │
+NB. │2022-06-07│0.2450 │10Y  │JP     │
+NB. │2022-06-14│3.0520 │1Y   │US     │
+NB. │2022-06-06│3.0399 │10Y  │US     │
+NB. └──────────┴───────┴─────┴───────┘
+NB.    isTableEmpty bonds1
+NB. 0
+NB.    isTableEmpty 0 randomRowsFromTable bonds
+NB. 1
+
+NB. Shows data types of all columns of an inverted table y
+
+NB. Update a given column x of inverted table y with the numeric cast of its literal values
 columnAsNum=: 4 : 0
 size=.${.y
 assert. ( (x >: (- size)) *. (x < size) )

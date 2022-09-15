@@ -370,7 +370,8 @@ What will follow is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted
 ### Filter rows
 
 Let's say we want to filter out all rows that have quotes less than 3.4.
-What we can do to achieve that is to specify row indices that have `quote >= 3.4`.
+What we can do to achieve that is to specify row indices that have `quote >= 3.4`
+and then use those indices to select rows as in the previous section.
 ```j
    3.4 <: ". >(<(<0),(<1)){ }.bonds
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
@@ -388,7 +389,7 @@ What we can do to achieve that is to specify row indices that have `quote >= 3.4
 └──────────┴───────┴─────┴───────┘
 ```
 
-What is we request `quote >= 3.4` but only for 5y tenor, ie., `tenor == 5Y` .
+We can request `quote >= 3.4` but only for 5y tenor, ie., if `tenor == 5Y`.
 ```j
    ]ixs1=: 3.4 <: ". >(<(<0),(<1)){ }.bonds
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
@@ -421,7 +422,7 @@ Now let's request data slice for trading week from 2022-06-06 to 2022-06-10.
 ├────┼─┼──┼─┼──┤
 │2022│-│06│-│14│
 └────┴─┴──┴─┴──┘
-   NB. the first column is extracted and interpreted 5-word tokens.
+   NB. the first column is extracted and interpreted as 5-word tokens.
 
    {{4{y}}"1;:>(<(<0),(<0)){ }. res
 ┌──┬──┐
@@ -432,7 +433,7 @@ Now let's request data slice for trading week from 2022-06-06 to 2022-06-10.
    {{".>4{y}}"1;:>(<(<0),(<0)){ }. res
 13 14
 
-   NB. Now we can impose predicates in the inline functionality.
+   NB. Now we can impose predicates using the inline functionality.
    ]ixs=: {{(6 = ".>2{y) *. ((6,7,8,9,10) e.~ ".>4{y)}}"1;:>(<(<0),(<0)){ }. bonds
 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0
    ]ixss=: ixs # i.nrows
@@ -474,8 +475,11 @@ Now let's request data slice for trading week from 2022-06-06 to 2022-06-10.
 └──────────┴───────┴─────┴───────┘
 ```
 
+One can also use `condIxs` function from j/analysis.ijs to get indices for a given condition.
+A number of conditions can then be used to form more complex condition.
+
 ### Order rows
-The another useful task is ability to order by column. We can order by column using "/:" or "\\:"
+The another useful task is an ability to order by column. We can order by column using "/:" or "\\:"
 ```j
    ]ixs=: /: ;: >(<(<0),(<0)){ }. week
 0 5 10 15 20 25 1 6 11 16 21 26 2 7 12 17 22 27 3 8 13 18 23 28 4 9 14 19 24 29
@@ -554,8 +558,8 @@ The another useful task is ability to order by column. We can order by column us
 └──────────┴───────┴─────┴───────┘
 ```
 
-For the sake of ordering with more than 1 column (so first order by column1 then finetune with column2 ordering, etc.)
-we will introduce `ranking` as follows:
+For the sake of ordering with more than 1 column (so first order by column1 then finetune the ordering withinh the same values of
+the first ordering with column2 ordering, etc.) we will introduce `ranking` as follows:
 ```j
    ranking=: i.!.0~ { /:@/:
    ranking&> }.week
@@ -641,7 +645,7 @@ Upon a close look we can discern patterns reflecting data columns represented in
 └──────────┴───────┴─────┴───────┘
 ```
 We see that table was ordered by `date` column at first. Then within the same `date` value
-rows are ordered by `quote` value in ascending order (but in lexicographical sense!). As they are unique the ordering by the rest
+rows `quote` values are ordered in ascending order (but in lexicographical sense!). As they are unique the ordering by the rest
 columns is omitted.
 
 We might want more fine-grained control over ordering. For example, we might request to
@@ -1000,7 +1004,7 @@ ordering of the former first and only then the latter.
 
 ### Update column
 
-We can use update technique to realize column updating.
+We can use basic update technique, ie., `newval ix } y`, to perform a column updating.
 ```j
 updateColumnVals =: 4 : 0
 'ix col'=:x
@@ -1095,7 +1099,7 @@ h,}.y
 └──────────┴───────────────┴─────┴───────┘
 ```
 
-Please notice the memory imprint of raw table vs raw table with one column converted as number.
+Notice the memory imprint of raw table vs raw table with one column converted as number.
 ```j
    7!:5 ;: 'week week2 week3'
 2304 2304 2304
@@ -1103,8 +1107,10 @@ Please notice the memory imprint of raw table vs raw table with one column conve
    NB. it seems it does matter for memory size if we represent a given column as number of bytes.
 ```
 
-After loading CSV all columns are literals, and we can have helper function to cast a given column to a number
-(if possible). `columnAsNum` defined in j/analysis.ijs expose just exactly what was done above.
+After loading CSV all columns are literals, and there is a helper function casting a given column to a number
+(if possible). Under the hood the function uses the technique from the above - see `columnAsNum` defined in
+j/analysis.ijs. Another useful function is `columnTypes` which inform about the types of columns in a given
+inverted table.
 
 ### Add column
 
