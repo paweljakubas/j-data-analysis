@@ -874,8 +874,6 @@ NB. 0
 NB.    isTableEmpty 0 randomRowsFromTable bonds
 NB. 1
 
-NB. Shows data types of all columns of an inverted table y
-
 NB. Update a given column x of inverted table y with the numeric cast of its literal values
 columnAsNum=: 4 : 0
 size=.${.y
@@ -914,6 +912,31 @@ NB. │2022-06-10│ 2.507│1Y   │US     │
 NB. │2022-06-13│ 0.035│5Y   │JP     │
 NB. │2022-06-09│3.0455│10Y  │US     │
 NB. └──────────┴──────┴─────┴───────┘
+
+NB. Show datatypes of columns of an inverted table y
+columnTypes=: 3 : 0
+assert. (-. isTableEmpty y)
+tmp_y=:y
+hs=. {. y
+ts=. <"1 {{ datatype {.>(<(<0),(<y)){ }. tmp_y }}"0 i.#{.y
+hs,:ts
+)
+NB. Example
+NB.    columnTypes bonds1
+NB. ┌───────┬───────┬───────┬───────┐
+NB. │date   │quote  │tenor  │country│
+NB. ├───────┼───────┼───────┼───────┤
+NB. │literal│literal│literal│literal│
+NB. └───────┴───────┴───────┴───────┘
+NB.    columnTypes 0 randomRowsFromTable bonds
+NB. |assertion failure: columnTypes
+NB. |       (-.isTableEmpty y)
+NB.    columnTypes (1 columnAsNum bonds1)
+NB. ┌────────┬────────┬────────┬────────┐
+NB. │date    │quote   │tenor   │country │
+NB. ├────────┼────────┼────────┼────────┤
+NB. │literal │floating│literal │literal │
+NB. └────────┴────────┴────────┴────────┘
 
 
 NB. Example
