@@ -13,6 +13,8 @@
 10. [Collapse data and rotate dataframe](#folding-data)
 11. [Work with two inverted tables](#two-tables)
 12. [Advanced grouping](#advanced-grouping)
+13. [Null values](#null-values)
+14. [Summary via example](#summary)
 
 ### Rationale behind using inverted table
 
@@ -2225,6 +2227,8 @@ tmp_ix=:>{.x
 └───────────────────────────┴───────────────────────────┴───────────────────────────┘
 ```
 
+`groupByNumeric` function is also defined in j/analysis.ijs
+
 In the last example we may wish to maintain `weekno` column.
 The grouping we can also be defined for string values.
 
@@ -2399,3 +2403,5 @@ section [Advanced grouping](#advanced-grouping).
 ### Folding data
 ### Two tables
 ### Advanced grouping
+### Null values
+### Summary
