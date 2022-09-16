@@ -18,7 +18,7 @@
 
 ### Rationale behind using inverted table
 
-Let's load bond data in a boxed form and as inverted table and compare memory footprint
+Let's load bond data in a boxed form and as an inverted table and compare memory footprint
 ```j
    ]bonds=: toTableFromCSV './datasets/bonds.csv'
 ┌──────────┬───────┬─────┬───────┐
@@ -302,12 +302,12 @@ Let's load bond data in a boxed form and as inverted table and compare memory fo
 3840 50176
 ```
 
-Inverted table is very efficient as a data structure when heterogeneous columns are to be stored.
+In general, an inverted table is very efficient as a data structure when heterogeneous columns are to be stored.
 In the example above the difference favoring the inverted table is one order of magnitude. Hence,
 the inverted table will be a way we will represent heterogeneous columns and try to master.
 
-Let's see how we can realize useful operations on that.
-What will follow is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted_Table] and
+What is next is an exploration into useful and prevalent operations enaging the inverted table.
+The material is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted_Table] and
 [https://code.jsoftware.com/wiki/User:Pascal_Jasmin/tuples-ranked_operations_on_inverted_table_data].
 
 
@@ -371,7 +371,7 @@ What will follow is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted
 
 ### Filter rows
 
-Let's say we want to filter out all rows that have quotes less than 3.4.
+Let's say we want to filter out all rows that have quotes not less than 3.4.
 What we can do to achieve that is to specify row indices that have `quote >= 3.4`
 and then use those indices to select rows as in the previous section.
 ```j
@@ -379,7 +379,7 @@ and then use those indices to select rows as in the previous section.
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
    ]ixs=: (3.4 <: ". (>(<(<0),(<1)){ }.bonds) ) # i.nrows
 69 70 85
-   NB. Notice ". which converts string to numbers (if possible)
+   NB. Notice ". which converts string to numbers (if possible). This is needed if a given column has literal datatype.
 
    ixs rowsFromTable bonds
 ┌──────────┬───────┬─────┬───────┐
@@ -560,7 +560,7 @@ The another useful task is an ability to order by column. We can order by column
 └──────────┴───────┴─────┴───────┘
 ```
 
-For the sake of ordering with more than 1 column (so first order by column1 then finetune the ordering withinh the same values of
+For the sake of ordering with more than 1 column (ie., first ordering by column1 then finetune the ordering within the same values of
 the first ordering with column2 ordering, etc.) we will introduce `ranking` as follows:
 ```j
    ranking=: i.!.0~ { /:@/:
@@ -752,10 +752,10 @@ ranking matrix.
    NB. the functions are also defined in j/algebra.ijs
 ```
 
-We are almost there when it comes to ordering. We see tenor is ordered as `10Y - 1Y - 5Y` or
-`5Y - 1Y - 10Y` which lexicographically is correct but we may want to introduce custom ordering like `1Y - 5Y - 10Y`
-to make it chronological (`1Y` stands for one year, and so on).
-In order to do that we need to construct ranking matrix based on this custom ordering.
+We see tenor is ordered as `10Y - 1Y - 5Y` or `5Y - 1Y - 10Y` which lexicographically is correct
+but we may want to introduce custom ordering like `1Y - 5Y - 10Y` to make it chronological
+(`1Y` stands for one year, and so on). In order to do that we need to
+construct ranking matrix based on this custom ordering.
 
 ```j
    ]source=: >(<(<0),(<2)){ }. week
@@ -1101,7 +1101,7 @@ h,}.y
 └──────────┴───────────────┴─────┴───────┘
 ```
 
-Notice the memory imprint of raw table vs raw table with one column converted as number.
+Notice the memory imprint of raw table vs raw table with one column converted to number is the same.
 ```j
    7!:5 ;: 'week week2 week3'
 2304 2304 2304
@@ -1111,7 +1111,7 @@ Notice the memory imprint of raw table vs raw table with one column converted as
 
 After loading CSV all columns are literals, and there is a helper function casting a given column to a number
 (if possible). Under the hood the function uses the technique from the above - see `columnAsNum` defined in
-j/analysis.ijs. Another useful function is `columnTypes` which inform about the types of columns in a given
+j/analysis.ijs. Another useful function is `columnTypes` which informs about the types of columns in a given
 inverted table.
 
 ### Add column
@@ -1271,6 +1271,8 @@ Sun
 └───┘
 
    NB. Alternatively we can use more flexible functionality from j/analysis.ijs
+   NB. which is more flexible as it requires datetime value so whatever the format
+   NB. we need only to parse it to the date time.
    {{ toDateTime toDayNo (,".>'-' strsplit y),0,0,0 }}"1 >(<(<0),(<0)){ }. week
 2022 6  6 0 0 0
 2022 6  7 0 0 0
@@ -1419,7 +1421,7 @@ The calculation of weekno is not straightforward though. ISO 8601 defines a stan
 times and time zones. It defines weeks that start on a Monday. It also says Week 1 of a year is the one which contains
 at least 4 days from the given year. Consequently, the 29th, 30th and 31st of December 20xx could be in week 1 of 20xy
 (where xy = xx + 1), and the 1st, 2nd and 3rd of January 20xy could all be in the last week of 20xx.
-Further, there can be a week 53.
+Moreover, there can be a week 53.
 ```j
    dayOfWeek1 (>0{'-' strsplit '2014-20-11'),'-1','-1'
 Wed
@@ -1893,7 +1895,7 @@ Tue
 └──────────┴───────┴─────┴───────┴──────┘
 ```
 
-Now let's take 10Y tenors for the US, and add columns that in each week separately will produce
+Now let's take 10Y tenors for the US, and add columns that in each week will separately produce
 maximum and minium quote for a given date. So in Mon a given quote will be both max and
 min, in Tue it will be max and min calculated from Mon and Tue of a given week, etc.
 We will use fold to realize that, the technique we will use many times in the future.
@@ -2081,7 +2083,7 @@ h,c
 
 ### Grouping
 
-The next useful task is going to be grouping. At first let's say we want to group against `weekno` so we are into
+Grouping is fundamental to data analysis. At first let's say we want to group against `weekno` so we are into
 slicing `bonds4` table into three overlapping tables each having the common week number.
 
 ```j
@@ -2227,10 +2229,10 @@ tmp_ix=:>{.x
 └───────────────────────────┴───────────────────────────┴───────────────────────────┘
 ```
 
-`groupByNumeric` function is also defined in j/analysis.ijs
+`groupByNumeric` function is defined in j/analysis.ijs
 
 In the last example we may wish to maintain `weekno` column.
-The grouping we can also be defined for string values.
+The grouping can also be realized for literal values.
 
 ```j
    NB. Let's add dayOfWeek column to bonds3
@@ -2292,7 +2294,7 @@ The grouping we can also be defined for string values.
 │2022-06-16│3.1952 │10Y  │US     │24    │Thu    │
 │2022-06-17│3.2313 │10Y  │US     │24    │Fri    │
 └──────────┴───────┴─────┴───────┴──────┴───────┘
-    NB. Let's group with values `Mon` and `Fri`.
+   NB. Let's group with values `Mon` and `Fri`.
    takeSliceString=: 4 : 0
 'ix vals'=:x
 size=.${.y
@@ -2395,6 +2397,9 @@ res0=. 2 1 $ <0$0
 │   │└──────────┴───────┴─────┴───────┴──────┴───────┘│
 └───┴─────────────────────────────────────────────────┘
 ```
+
+We can also request dedicated groups rather than rely group by all values
+of a given column.
 
 More sophisticated grouping will require joining capabilities and is covered in
 section [Advanced grouping](#advanced-grouping).
