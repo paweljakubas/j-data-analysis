@@ -9,7 +9,7 @@
 6. [Add column](#add-column)
 7. [Remove column](#remove-column)
 8. [Grouping](#grouping)
-9. [Aggregate](#aggregating)
+9. [Aggregate and transform](#aggregating-and-transforming)
 10. [Collapse data and rotate dataframe](#folding-data)
 11. [Work with two inverted tables](#two-tables)
 12. [Advanced grouping](#advanced-grouping)
@@ -2175,8 +2175,8 @@ res0=. 2 1 $ <0$0
 └────────────────────┴────────────────────┴────────────────────┘
 ```
 
-So we have grouping by taking all values and each group is tagged by a single value from column's unique values.
-What about groups that are depicted by several values, and one value can be present in several groups?
+So we have successfully grouped by taking all values and each group is tagged by a single value from column's unique values.
+What about groups that are depicted by several values, with a given value present in several groups?
 
 ```j
    groupByNumeric=: 4 : 0
@@ -2398,12 +2398,12 @@ res0=. 2 1 $ <0$0
 └───┴─────────────────────────────────────────────────┘
 ```
 
-We can go on as in case of `groupByNumeric` and also request dedicated groups rather
+We can procceed as in case of `groupByNumeric` and also request dedicated groups rather
 than rely group by all values of a given column.
 
 The function `groupBy` from j/analysis.ijs unifies both versions: numeric and literal.
 One more difference is that it denotes the group in more robust way and prepares itself
-for more advanced extensions. Here is example:
+for more advanced extensions. Here is an example of its usage:
 ```j
    ]bonds1=: 10 randomRowsFromTable bonds
 ┌──────────┬───────┬─────┬───────┐
@@ -2581,9 +2581,9 @@ for more advanced extensions. Here is example:
 More sophisticated grouping will require joining capabilities and is covered in
 section [Advanced grouping](#advanced-grouping).
 
-### Aggregating
+### Aggregating and transforming
 
-After having a grouping one usually want to calculate something in the grouped tables. Let's
+After perfoming the grouping operation one usually wants to calculate something within the groups. Let's
 calculate row count, average, maximum and minimum quotes.
 ```j
    ]group=: 2 groupBy bonds3
@@ -2670,8 +2670,8 @@ h,:c
 ```
 
 Now it would be useful to have a possibility to calculate more than 1 aggregation at once.
-The functionality `transformTable` from j/analysis.ijs build on top of the above implementation
-and do exactly that.
+The functionality `transformTable` from j/analysis.ijs builds on top of the above implementation
+and perform exactly this.
 
 ### Folding data
 ### Two tables

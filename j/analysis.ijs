@@ -104,12 +104,17 @@ NB. │2022-06-17│3.2313 │10Y  │US     │
 NB. │2022-06-01│-0.0840│1Y   │JP     │
 NB. └──────────┴───────┴─────┴───────┘
 
+NB. Number of rows in inverted table
+nrows=: {{ >{.{.#&.>}.y }}
+NB. Example
+NB.    nrows bonds
+NB. 89
+
 NB. Select random rows from inverted table, header is maintained.
 NB. x is number of random rows, y is table
 randomRowsFromTable=: 4 : 0
-nrows=.>{.{.#&.>}.y
-assert. (x <: nrows)
-(x?nrows) rowsFromTable y
+assert. (x <: nrows y)
+(x?nrows y) rowsFromTable y
 )
 NB.    3 randomRowsFromTable bonds
 NB. ┌──────────┬───────┬─────┬───────┐
@@ -278,13 +283,98 @@ NB.    (4,0) exchangeColumns week
 NB. |assertion failure: exchangeColumns
 NB. |       ((c1>:(-size))*.(c1<size)*.(c2>:(-size))*.(c2<size))
 
-NB. Number of rows in inverted table
-nrows=: {{ >{.{.#&.>}.y }}
-NB. Example
-NB.    nrows bonds
-NB. 89
 
-NB. Update the values of a selected column
+NB. Get values of a selected column
+NB. x is column index and y is an inverted table
+getColumnVals =: 4 : 0
+size=.${.y
+assert. ( (x >: (- size)) *. (x < size) )
+>(<(<0),(<x)){ }. y
+)
+NB. Example
+NB.    bonds3
+NB. ┌──────────┬───────┬─────┬───────┬───────┬──────┐
+NB. │date      │quote  │tenor│country│weekday│weekno│
+NB. ├──────────┼───────┼─────┼───────┼───────┼──────┤
+NB. │2022-06-14│3.0520 │1Y   │US     │Tue    │24    │
+NB. │2022-06-16│0.0380 │5Y   │JP     │Thu    │24    │
+NB. │2022-06-07│2.9791 │10Y  │US     │Tue    │23    │
+NB. │2022-06-06│-0.0800│1Y   │JP     │Mon    │23    │
+NB. │2022-06-03│0.2350 │10Y  │JP     │Fri    │22    │
+NB. │2022-05-30│0.2300 │10Y  │JP     │Mon    │22    │
+NB. │2022-06-09│-0.0830│1Y   │JP     │Thu    │23    │
+NB. │2022-06-10│2.5070 │1Y   │US     │Fri    │23    │
+NB. │2022-06-13│0.0350 │5Y   │JP     │Mon    │24    │
+NB. │2022-06-09│3.0455 │10Y  │US     │Thu    │23    │
+NB. └──────────┴───────┴─────┴───────┴───────┴──────┘
+NB.    1 getColumnVals bonds3
+NB. 3.0520
+NB. 0.0380
+NB. 2.9791
+NB. -0.0800
+NB. 0.2350
+NB. 0.2300
+NB. -0.0830
+NB. 2.5070
+NB. 0.0350
+NB. 3.0455
+NB.    ". 1 getColumnVals bonds3
+NB. 3.052 0.038 2.9791 _0.08 0.235 0.23 _0.083 2.507 0.035 3.0455
+NB.    5 getColumnVals bonds3
+NB. 24
+NB. 24
+NB. 23
+NB. 23
+NB. 22
+NB. 22
+NB. 23
+NB. 23
+NB. 24
+NB. 23
+NB.    0 getColumnVals bonds3
+NB. 2022-06-14
+NB. 2022-06-16
+NB. 2022-06-07
+NB. 2022-06-06
+NB. 2022-06-03
+NB. 2022-05-30
+NB. 2022-06-09
+NB. 2022-06-10
+NB. 2022-06-13
+NB. 2022-06-09
+
+NB. Get header name of a selected column
+NB. x is column index and y is an inverted table
+getColumnName =: 4 : 0
+size=.${.y
+assert. ( (x >: (- size)) *. (x < size) )
+>x{ {. y
+)
+NB. Example
+NB.    bonds3
+NB. ┌──────────┬───────┬─────┬───────┬───────┬──────┐
+NB. │date      │quote  │tenor│country│weekday│weekno│
+NB. ├──────────┼───────┼─────┼───────┼───────┼──────┤
+NB. │2022-06-14│3.0520 │1Y   │US     │Tue    │24    │
+NB. │2022-06-16│0.0380 │5Y   │JP     │Thu    │24    │
+NB. │2022-06-07│2.9791 │10Y  │US     │Tue    │23    │
+NB. │2022-06-06│-0.0800│1Y   │JP     │Mon    │23    │
+NB. │2022-06-03│0.2350 │10Y  │JP     │Fri    │22    │
+NB. │2022-05-30│0.2300 │10Y  │JP     │Mon    │22    │
+NB. │2022-06-09│-0.0830│1Y   │JP     │Thu    │23    │
+NB. │2022-06-10│2.5070 │1Y   │US     │Fri    │23    │
+NB. │2022-06-13│0.0350 │5Y   │JP     │Mon    │24    │
+NB. │2022-06-09│3.0455 │10Y  │US     │Thu    │23    │
+NB. └──────────┴───────┴─────┴───────┴───────┴──────┘
+NB.    0 getColumnName bonds3
+NB. date
+NB.    1 getColumnName bonds3
+NB. quote
+NB.    5 getColumnName bonds3
+NB. weekno
+
+
+NB. Update values of a selected column
 NB. x is (colIx,newcol) and y is an inverted table
 updateColumnVals =: 4 : 0
 'tmp_ix tmp_col'=:x
