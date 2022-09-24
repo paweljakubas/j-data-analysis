@@ -3096,6 +3096,40 @@ ix # i.nrows y
    $((0;'2022-05-31';2;'5Y ') getMatrixPoint bonds3)
 0
 
+   getMatrixPoint=: 4 : 0
+'ix1 col1 ix2 col2'=.x
+f1=.{{ x e. <y }}"1`''
+ix=. ( ((ix1;<<col1);f1) condIxs y ) *. ( ((ix2;<<col2);f1) condIxs y )
+ix3=. (0$0) $ (<(<<ix1,ix2)) { i.3
+>ix3 } ,}. (ix # i.nrows y) rowsFromTable y
+)
+   (0;'2022-05-31';2;'1Y ') getMatrixPoint bonds3
+-0.0840
+
+   constructMatrixCol=: 4 : 0
+'tmp_ix1 tmp_ix2 tmp_val'=:x
+all=.(<"1) {./.~  tmp_ix1 getColumnVals y
+tmp_y=:y
+,. '' ]F.. {{ if. (#y) = 0 do. (,:((tmp_ix1;(>x);tmp_ix2;tmp_val) getMatrixPoint tmp_y)) else. (y,((tmp_ix1;(>x);tmp_ix2;tmp_val) getMatrixPoint tmp_y)) end. }} all
+)
+
+   (0;2;'1Y ') constructMatrixCol bonds3
+-0.0860
+-0.0840
+-0.0840
+-0.0860
+
+
+-0.0830
+-0.0850
+-0.0830
+
+-0.0640
+-0.0820
+-0.0860
+-0.1060
+-0.0950
+   NB. we see empty spaces that represent missing values.
 ```
 
 
