@@ -83,9 +83,18 @@ t=. toGridFromTable >1{y
 fromGridToGnuplot strs;<t
 )
 
+NB. Number of rows in an inverted table
+nrows=: {{ >{.{.#&.>}.y }}
+NB. Example
+NB.    nrows bonds
+NB. 89
+
 NB. Select rows from an inverted table, header is maintained.
 NB. x is vector, y is table
 rowsFromTable=: 4 : 0
+tmp_size=: nrows y
+ixsCheck=. */ {{ (y >: (- tmp_size)) *. (y < tmp_size) }} x
+assert. (ixsCheck = 1)
 (({.),((<x) {&.> }.)) y
 )
 NB.    (0,1,2) rowsFromTable bonds
@@ -107,6 +116,9 @@ NB. └──────────┴───────┴─────�
 NB. Deselect rows from an inverted table, header is maintained.
 NB. x is vector, y is table
 rowsOutOfTable=: 4 : 0
+tmp_size=: nrows y
+ixsCheck=. */ {{ (y >: (- tmp_size)) *. (y < tmp_size) }} x
+assert. (ixsCheck = 1)
 (({.),((<<<<x) {&.> }.)) y
 )
 NB. Example
@@ -152,12 +164,6 @@ NB. │2022-06-08│-0.0850│1Y   │JP     │
 NB. │2022-06-09│-0.0830│1Y   │JP     │
 NB. │2022-06-10│-0.0900│1Y   │JP     │
 NB. └──────────┴───────┴─────┴───────┘
-
-NB. Number of rows in inverted table
-nrows=: {{ >{.{.#&.>}.y }}
-NB. Example
-NB.    nrows bonds
-NB. 89
 
 NB. Select random rows from inverted table, header is maintained.
 NB. x is number of random rows, y is table
