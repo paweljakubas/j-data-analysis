@@ -2671,7 +2671,7 @@ h,:c
 
 Now it would be useful to have a possibility to calculate more than 1 aggregation at once.
 The functionality `transformTable` from j/analysis.ijs builds on top of the above implementation
-and perform exactly this.
+and performs exactly this.
 ```j
    ]group=: 2 groupBy bonds3
 ┌─────────────────────────────────────────────────┬─────────────────────────────────────────────────┬─────────────────────────────────────────────────┐
@@ -2783,9 +2783,10 @@ Finally, the following quite interesting possibility using the same function
 
 ### Folding data
 
-We know how to selectively filter the rows of an inverted table, order by columns and impose group decomposition.
-This allows for ending up with a data snapshot having three columns in which two are ordered and the third one's values are
-of interest to us but not particularly as a column values. We are into assembling them as a matrix which means data folding.
+We know how to selectively filter the rows of an inverted table, order by columns and impose group by decomposition.
+This allows for ending up with a data snapshot having three columns in which two are ordered and the third one's values
+of interest to us. We are not particularly into column values, but want fold them in such a way that it expose the two columns relation.
+Upon assembling them as a matrix which means data folding we need to take care of missing values.
 We may wish to construct 2D array from those values to proceed with matrix based computations in the next step. Let's work an example
 to see the case.
 ```j
@@ -2793,7 +2794,7 @@ to see the case.
    ]ix=: ((3;<(<'JP'));(e.~`'')) condIxs bonds
 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
    ]ixs=: ix # i.nrows bonds
-0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44
+ 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44
    ]bonds1=: 3 removeColumn ixs rowsFromTable bonds
 ┌──────────┬───────┬─────┐
 │date      │quote  │tenor│

@@ -83,7 +83,7 @@ t=. toGridFromTable >1{y
 fromGridToGnuplot strs;<t
 )
 
-NB. Select rows from inverted table, header is maintained.
+NB. Select rows from an inverted table, header is maintained.
 NB. x is vector, y is table
 rowsFromTable=: 4 : 0
 (({.),((<x) {&.> }.)) y
@@ -102,6 +102,55 @@ NB. │date      │quote  │tenor│country│
 NB. ├──────────┼───────┼─────┼───────┤
 NB. │2022-06-17│3.2313 │10Y  │US     │
 NB. │2022-06-01│-0.0840│1Y   │JP     │
+NB. └──────────┴───────┴─────┴───────┘
+
+NB. Deselect rows from an inverted table, header is maintained.
+NB. x is vector, y is table
+rowsOutOfTable=: 4 : 0
+(({.),((<<<<x) {&.> }.)) y
+)
+NB. Example
+NB.    ]bonds1=: (i.10) rowsFromTable bonds
+NB. ┌──────────┬───────┬─────┬───────┐
+NB. │date      │quote  │tenor│country│
+NB. ├──────────┼───────┼─────┼───────┤
+NB. │2022-05-30│-0.0860│1Y   │JP     │
+NB. │2022-05-31│-0.0840│1Y   │JP     │
+NB. │2022-06-01│-0.0840│1Y   │JP     │
+NB. │2022-06-02│-0.0860│1Y   │JP     │
+NB. │2022-06-03│-0.0830│1Y   │JP     │
+NB. │2022-06-06│-0.0800│1Y   │JP     │
+NB. │2022-06-07│-0.0830│1Y   │JP     │
+NB. │2022-06-08│-0.0850│1Y   │JP     │
+NB. │2022-06-09│-0.0830│1Y   │JP     │
+NB. │2022-06-10│-0.0900│1Y   │JP     │
+NB. └──────────┴───────┴─────┴───────┘
+NB.    0 rowsOutOfTable bonds1
+NB. ┌──────────┬───────┬─────┬───────┐
+NB. │date      │quote  │tenor│country│
+NB. ├──────────┼───────┼─────┼───────┤
+NB. │2022-05-31│-0.0840│1Y   │JP     │
+NB. │2022-06-01│-0.0840│1Y   │JP     │
+NB. │2022-06-02│-0.0860│1Y   │JP     │
+NB. │2022-06-03│-0.0830│1Y   │JP     │
+NB. │2022-06-06│-0.0800│1Y   │JP     │
+NB. │2022-06-07│-0.0830│1Y   │JP     │
+NB. │2022-06-08│-0.0850│1Y   │JP     │
+NB. │2022-06-09│-0.0830│1Y   │JP     │
+NB. │2022-06-10│-0.0900│1Y   │JP     │
+NB. └──────────┴───────┴─────┴───────┘
+NB.    (i.2) rowsOutOfTable bonds1
+NB. ┌──────────┬───────┬─────┬───────┐
+NB. │date      │quote  │tenor│country│
+NB. ├──────────┼───────┼─────┼───────┤
+NB. │2022-06-01│-0.0840│1Y   │JP     │
+NB. │2022-06-02│-0.0860│1Y   │JP     │
+NB. │2022-06-03│-0.0830│1Y   │JP     │
+NB. │2022-06-06│-0.0800│1Y   │JP     │
+NB. │2022-06-07│-0.0830│1Y   │JP     │
+NB. │2022-06-08│-0.0850│1Y   │JP     │
+NB. │2022-06-09│-0.0830│1Y   │JP     │
+NB. │2022-06-10│-0.0900│1Y   │JP     │
 NB. └──────────┴───────┴─────┴───────┘
 
 NB. Number of rows in inverted table
