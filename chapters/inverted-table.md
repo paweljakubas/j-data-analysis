@@ -2784,10 +2784,11 @@ Finally, the following quite interesting possibility using the same function
 ### Folding data
 
 We know how to selectively filter the rows of an inverted table, order by columns and impose group by decomposition.
-This allows for ending up with a data snapshot having three columns in which two are ordered and the third one's values
-of interest to us. We are not particularly into column values, but want fold them in such a way that it expose the two columns relation.
-Upon assembling them as a matrix which means data folding we need to take care of missing values.
-We may wish to construct 2D array from those values to proceed with matrix based computations in the next step. Let's work an example
+This allows for ending up with a data snapshot having three columns in which two are ordered and the third one's values are
+of interest to us. We are often not particularly interested in three column shape and want to fold
+third column values in such a way that the result exposes the two columns relation in matrix form.
+Upon assembling the values in a matrix form we need to take care of missing values.
+We may wish to construct 2D array from those values to proceed with matrix based computations in the next step. Let's work with an example
 to see the case.
 ```j
    NB. Let's take all quotes for JP and remove the redundant country column
@@ -3132,7 +3133,7 @@ tmp_y=:y
    NB. Note the empty spaces that represent missing values.
 ```
 
-Now we can construct matrix using `constructMatrixCol` as implemented in `j/analysis.ijs`.
+Now we can construct matrix using `constructMatrixCol` inside as implemented in `j/analysis.ijs`.
 ```j
    (0;2) constructMatrix bonds3
 ┌──────────┬───────┬───────┬───────┐
@@ -3203,8 +3204,8 @@ Now we can construct matrix using `constructMatrixCol` as implemented in `j/anal
 └──────────┴───────┴───────┴────┘
 ```
 
-Note that the ability to transform inverted table like above means we will be defering conversion to the last stage.
-Before that we can use some conversion to rely not on lexicographical ordering but numerical one, but we will return
+Note that the ability to transform the inverted table like above means we will be defering numerical conversion to the last stage.
+Before that we can use some conversions to rely not on lexicographical ordering but for example numerical one, but we will return
 to literal representation due to capability presented above. In the end we usually want to facilitate matrix operations,
 and in the steps leading to that we will try to maintain literal data type. More on handling null values is presented in
 [Null values](#null-values) section.
