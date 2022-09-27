@@ -3293,7 +3293,42 @@ keys=. 0 ]F:. {{ <(<x) {&.> tmp_cols }} i.#0{>tmp_cols
 └───────────────┴───────────────┴───────────────┴───────────────┴───────────────┴───────────────┴───────────────┴───────────────┴───────────────┘
 ```
 Both functions are also available in j/analysis.ijs. It is worth noting that also multi-column keys are handled.
-
+In order for an inverted table to have valid key set the number of returned keys from `getUniqueKeys` must equal to
+the number of rows in this table.
+```j
+   checkKeys=: {{ (# x getUniqueKeys y) = nrows y }}
+   snapshot
+┌──────────┬───────┬─────┬───────┐
+│date      │quote  │tenor│country│
+├──────────┼───────┼─────┼───────┤
+│2022-06-01│2.9160 │5Y   │US     │
+│2022-05-30│2.8097 │10Y  │US     │
+│2022-06-06│3.0368 │5Y   │US     │
+│2022-06-06│2.1960 │1Y   │US     │
+│2022-06-15│0.2520 │10Y  │JP     │
+│2022-06-02│2.9131 │10Y  │US     │
+│2022-06-09│0.2490 │10Y  │JP     │
+│2022-06-03│-0.0090│5Y   │JP     │
+│2022-06-15│3.2915 │10Y  │US     │
+│2022-06-14│-0.0820│1Y   │JP     │
+└──────────┴───────┴─────┴───────┘
+   0 checkKeys snapshot
+0
+   1 checkKeys snapshot
+1
+   2 checkKeys snapshot
+0
+   3 checkKeys snapshot
+0
+   (0,3) checkKeys snapshot
+0
+   (0,2) checkKeys snapshot
+0
+   (0,2,3) checkKeys snapshot
+1
+   NB. valid primary key for the above table is formed by (date, tenor, country)
+   NB. Neither date nor (date,tenor) forms valid primary key. They are not unique.
+```
 
 
 ### Advanced grouping
