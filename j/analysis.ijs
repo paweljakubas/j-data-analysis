@@ -1764,3 +1764,42 @@ NB. │2022-06-15│0.0700 │0.2520 │    │
 NB. │2022-06-16│       │       │    │
 NB. │2022-06-17│0.0480 │0.2250 │    │
 NB. └──────────┴───────┴───────┴────┘
+
+NB. Count missing values in column x of an invertible table y
+countMissingVals=: 4 : 0
+size=.${.y
+assert. ( (x >: (- size)) *. (x < size) )
+0 ]F.. {{ if. ((<strdespace x)=<'') do. (>:y) else. y end. }} x getColumnVals y
+)
+NB. Example
+NB.    bonds4
+NB. ┌──────────┬───────┬───────┬───────┐
+NB. │date/tenor│1Y     │5Y     │10Y    │
+NB. ├──────────┼───────┼───────┼───────┤
+NB. │2022-05-30│-0.0860│0.0000 │       │
+NB. │2022-05-31│-0.0840│       │0.2410 │
+NB. │2022-06-01│-0.0840│-0.0040│0.2350 │
+NB. │2022-06-02│-0.0860│0.0000 │0.2400 │
+NB. │2022-06-03│       │-0.0090│       │
+NB. │2022-06-06│       │-0.0040│       │
+NB. │2022-06-07│-0.0830│0.0000 │0.2450 │
+NB. │2022-06-08│-0.0850│-0.0100│0.2450 │
+NB. │2022-06-09│-0.0830│-0.0100│0.2490 │
+NB. │2022-06-10│       │       │0.2500 │
+NB. │2022-06-13│-0.0640│0.0350 │0.2550 │
+NB. │2022-06-14│-0.0820│0.0700 │0.2560 │
+NB. │2022-06-15│-0.0860│0.0700 │0.2520 │
+NB. │2022-06-16│-0.1060│       │       │
+NB. │2022-06-17│-0.0950│0.0480 │0.2250 │
+NB. └──────────┴───────┴───────┴───────┘
+NB.    0 countMissingVals bonds4
+NB. 0
+NB.    1 countMissingVals bonds4
+NB. 3
+NB.    2 countMissingVals bonds4
+NB. 3
+NB.    3 countMissingVals bonds4
+NB. 4
+NB.    4 countMissingVals bonds4
+NB. |assertion failure: countMissingVals
+NB. |       ((x>:(-size))*.(x<size))

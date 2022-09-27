@@ -3211,6 +3211,12 @@ and in the steps leading to that we will try to maintain literal data type. More
 [Null values](#null-values) section.
 
 ### Two tables
+
+Merging two tables that share columns is fundamental task and hence we  will develop join functionality in this section.
+First of all we need to have a check that a given inverted table and specified set of columns
+is valid for joining, ie. the set of columns establishes a unique key.
+Moreover, the selected columns cannot have missing values.
+
 ### Advanced grouping
 ### Null values
 ### Summary
