@@ -56,6 +56,12 @@ toTableFromGrid=: 3 : 0
 ({.,:,each/@:(,:each)@}.) y
 )
 
+NB. dump inverted table x to CSV file y
+toCSVfromTable=: {{ (toGridFromTable x) appenddsv y;',';'' }}
+
+NB. dump grid x to CSV file y
+toCSVfromGrid=: {{ x appenddsv y;',';'' }}
+
 NB. gnuplot the grid with gnuplot commands
 NB. y is expected to be structured as follows:
 NB. cmds=:'cmd1';'cmd2'
