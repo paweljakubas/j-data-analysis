@@ -3745,6 +3745,49 @@ y {{y, >x}} &.> x
 │2022-06-06│Mon│23│
 │          │   │  │
 └──────────┴───┴──┘
+
+   leftJoin=: 4 : 0
+toIter=. >0{ ,}.>1{x
+newh=:(<<<0){{.>1{y
+tmp_right=: >1{y
+newc=.0 ]F:. {{(<(0;x)) getKeyFields tmp_right }} toIter
+toTableFromGrid newh,newc
+)
+   left leftJoin right
+┌───────┬──────┐
+│weekday│weekno│
+├───────┼──────┤
+│Tue    │24    │
+│       │      │
+│Thu    │24    │
+│       │      │
+│       │      │
+│       │      │
+│Mon    │23    │
+│       │      │
+│Fri    │22    │
+│       │      │
+│Mon    │22    │
+│       │      │
+│Thu    │23    │
+│       │      │
+│       │      │
+│       │      │
+│       │      │
+│       │      │
+│Thu    │23    │
+│       │      │
+│Tue    │24    │
+│       │      │
+│Wed    │23    │
+│       │      │
+│Wed    │22    │
+│       │      │
+│Mon    │22    │
+│       │      │
+│Tue    │24    │
+└───────┴──────┘
+
 ```
 
 
