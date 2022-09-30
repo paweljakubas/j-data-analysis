@@ -3623,6 +3623,39 @@ tmp_y=: y
 
    ((0;'2022-06-08');<(2;23)) getKeysIxs rightData
 0 0 0 0 0 0 0 0 0 1 0
+
+   NB. Now funcionality to get data from right table for a given key
+   NB. But only non-key column values and without header
+   getKeyFields=: 4 : 0
+ixs=. x getKeysIxs y
+row=. (ixs # i.nrows y) rowsFromTable y
+assert. ( (nrows row) <: 1)
+ixsR=. \:~ 0 ]F:. {{ 0{>x }} x
+1{ row ]F.. {{ (>x) removeColumn y }} ixsR
+)
+   (<(1;'Tue')) getKeyFields rightData
+┌──────────┬──┐
+│2022-06-14│24│
+└──────────┴──┘
+   (<(0;'2022-04-30')) getKeyFields rightData
+┌───┬──┐
+└───┴──┘
+   $(<(0;'2022-04-30')) getKeyFields rightData
+2
+   (<(0;'2022-05-30')) getKeyFields rightData
+┌───┬──┐
+│Mon│22│
+└───┴──┘
+   NB. Beware here, I managed to load tables and right now every
+   NB. column is literal
+
+   (<(2;'23')) getKeyFields rightData
+|assertion failure: getKeyFields
+|       ((nrows row)<:1)
+   ((0;'2022-06-08');<(2;'23')) getKeyFields rightData
+┌───┐
+│Wed│
+└───┘
 ```
 
 
