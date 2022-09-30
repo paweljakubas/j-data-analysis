@@ -3788,6 +3788,65 @@ toTableFromGrid newh,newc
 │Tue    │24    │
 └───────┴──────┘
 
+   leftJoin=: 4 : 0
+toIter=. >0{ ,}.>1{x
+newh=:(<<<0){{.>1{y
+tmp_right=: >1{y
+newc=.0 ]F:. {{(<(0;x)) getKeyFields tmp_right }} toIter
+tmp_res=: toTableFromGrid newh,newc
+newh,: {{ <,.>y{1{tmp_res }}"0 i.$newh
+)
+   left leftJoin right
+┌───────┬──────┐
+│weekday│weekno│
+├───────┼──────┤
+│Tue    │24    │
+│Thu    │24    │
+│       │      │
+│Mon    │23    │
+│Fri    │22    │
+│Mon    │22    │
+│Thu    │23    │
+│       │      │
+│       │      │
+│Thu    │23    │
+│Tue    │24    │
+│Wed    │23    │
+│Wed    │22    │
+│Mon    │22    │
+│Tue    │24    │
+└───────┴──────┘
+
+   NB. And finally
+   leftJoin=: 4 : 0
+toIter=. >0{ ,}.>1{x
+newh=:(<<<0){{.>1{y
+tmp_right=: >1{y
+newc=.0 ]F:. {{(<(0;x)) getKeyFields tmp_right }} toIter
+tmp_res=: toTableFromGrid newh,newc
+tmp_cols=: newh,: {{ <,.>y{1{tmp_res }}"0 i.$newh
+(>1{x) ]F.. {{ ( (>x{0{tmp_cols); x{1{tmp_cols) addColumn y }} (i.}. $tmp_cols)
+)
+   left leftJoin right
+┌──────────┬───────┬─────┬───────┬───────┬──────┐
+│date      │quote  │tenor│country│weekday│weekno│
+├──────────┼───────┼─────┼───────┼───────┼──────┤
+│2022-06-14│3.0520 │1Y   │US     │Tue    │24    │
+│2022-06-16│0.0380 │5Y   │JP     │Thu    │24    │
+│2022-06-07│2.9791 │10Y  │US     │       │      │
+│2022-06-06│-0.0800│1Y   │JP     │Mon    │23    │
+│2022-06-03│0.2350 │10Y  │JP     │Fri    │22    │
+│2022-05-30│0.2300 │10Y  │JP     │Mon    │22    │
+│2022-06-09│-0.0830│1Y   │JP     │Thu    │23    │
+│2022-06-10│2.5070 │1Y   │US     │       │      │
+│2022-06-13│0.0350 │5Y   │JP     │       │      │
+│2022-06-09│3.0455 │10Y  │US     │Thu    │23    │
+│2022-06-14│0.0700 │5Y   │JP     │Tue    │24    │
+│2022-06-08│0.2450 │10Y  │JP     │Wed    │23    │
+│2022-06-01│2.9160 │5Y   │US     │Wed    │22    │
+│2022-05-30│2.8097 │10Y  │US     │Mon    │22    │
+│2022-06-14│3.6013 │5Y   │US     │Tue    │24    │
+└──────────┴───────┴─────┴───────┴───────┴──────┘
 ```
 
 
