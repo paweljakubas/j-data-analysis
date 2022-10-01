@@ -3891,6 +3891,40 @@ Let's investigate another 2 field unique key example.
 0
    (0,1) checkKeys right
 1
+
+   NB. Below we will develop left join that handles multi-key case and add some checks
+   leftJoin=: 4 : 0
+assert. ( (>0{y) checkKeys (>1{y) = 1)
+tmp_left_d=: >1{x
+tmp_left_i=: >0{x
+}. toGridFromTable ((2 * $tmp_left_i) $ <'') ,: ,{{ (<((nrows tmp_left_d), 1) $ (nrows tmp_left_d) $ y), y{ ,}. tmp_left_d }}"0 tmp_left_i
+)
+   ((0,1);<left) leftJoin ((0,1);<right)
+┌─┬──┬─┬───┐
+│0│k1│1│kk1│
+├─┼──┼─┼───┤
+│0│k1│1│kk2│
+├─┼──┼─┼───┤
+│0│k2│1│kk1│
+├─┼──┼─┼───┤
+│0│k3│1│kk2│
+├─┼──┼─┼───┤
+│0│k3│1│kk1│
+├─┼──┼─┼───┤
+│0│k3│1│kk3│
+├─┼──┼─┼───┤
+│0│k1│1│kk4│
+├─┼──┼─┼───┤
+│0│k4│1│kk1│
+├─┼──┼─┼───┤
+│0│k5│1│kk5│
+├─┼──┼─┼───┤
+│0│k6│1│kk2│
+├─┼──┼─┼───┤
+│0│k7│1│kk2│
+├─┼──┼─┼───┤
+│0│k7│1│kk3│
+└─┴──┴─┴───┘
 ```
 
 ### Advanced grouping
