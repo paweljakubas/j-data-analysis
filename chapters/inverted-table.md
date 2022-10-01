@@ -3849,6 +3849,49 @@ tmp_cols=: newh,: {{ <,.>y{1{tmp_res }}"0 i.$newh
 └──────────┴───────┴─────┴───────┴───────┴──────┘
 ```
 
+Let's investigate another 2 field unique key example.
+```j
+   ]left=: toTableFromCSV 'datasets/left.csv'
+┌────┬────┬──────┬──────┐
+│key1│key2│field1│field2│
+├────┼────┼──────┼──────┤
+│k1  │kk1 │a     │1     │
+│k1  │kk2 │b     │11    │
+│k2  │kk1 │c     │10    │
+│k3  │kk2 │d     │2     │
+│k3  │kk1 │f     │21    │
+│k3  │kk3 │a     │20    │
+│k1  │kk4 │a     │1     │
+│k4  │kk1 │b     │11    │
+│k5  │kk5 │c     │10    │
+│k6  │kk2 │g     │33    │
+│k7  │kk2 │z     │5     │
+│k7  │kk3 │v     │6     │
+└────┴────┴──────┴──────┘
+   ]right=: toTableFromCSV 'datasets/right.csv'
+┌────┬────┬──────┬──────┐
+│key1│key2│field3│field4│
+├────┼────┼──────┼──────┤
+│k1  │kk1 │f1    │dog   │
+│k1  │kk2 │f2    │cat   │
+│k3  │kk1 │f3    │snake │
+│k1  │kk3 │f4    │frog  │
+│k4  │kk2 │f3    │horse │
+│k8  │kk1 │f1    │bug   │
+│k5  │kk5 │f4    │bird  │
+│k6  │kk1 │f5    │dog   │
+│k7  │kk2 │f9    │spider│
+│k7  │kk4 │f2    │tiger │
+└────┴────┴──────┴──────┘
+   0 checkKeys left
+0
+   (0,1) checkKeys left
+1
+   0 checkKeys right
+0
+   (0,1) checkKeys right
+1
+```
 
 ### Advanced grouping
 ### Null values

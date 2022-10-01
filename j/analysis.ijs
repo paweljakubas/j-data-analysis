@@ -1893,6 +1893,17 @@ NB. │2022-06-08│Wed    │23    │
 NB. │2022-06-06│Mon    │23    │
 NB. └──────────┴───────┴──────┘
 
+NB. Check if keys specified in x form unique key for a given inverted table
+checkKeys=: {{ (# x getUniqueKeys y) = nrows y }}
+NB. Example
+NB.    (0,2,3) checkKeys a
+NB. 1
+NB.    (0,2) checkKeys a
+NB. 0
+NB.    0 checkKeys a
+NB. 0
+NB.     0 checkKeys b
+NB. 1
 
 NB. Merge two columns boxed
 mergeColumnVals=: 4 : 0
