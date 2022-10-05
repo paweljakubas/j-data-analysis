@@ -1982,7 +1982,7 @@ NB. │└───┴────┘│└───┴────┘│
 NB. └──────────┴──────────┘
 getKeysIxs=: 4 : 0
 tmp_y=: y
-((nrows y) $ 1) ]F.. {{ y *. (>x) getKeyIxs tmp_y}} x
+((nrows y) $ 1) ]F.. {{ y *. ,(>x) getKeyIxs tmp_y}} x
 )
 NB. Example
 NB.    ((0;'2022-06-08');<(2;22)) getKeysIxs b

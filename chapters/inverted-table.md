@@ -3607,7 +3607,7 @@ end.
 
    getKeysIxs=: 4 : 0
 tmp_y=: y
-((nrows y) $ 1) ]F.. {{ y *. (>x) getKeyIxs tmp_y}} x
+((nrows y) $ 1) ]F.. {{ y *. ,(>x) getKeyIxs tmp_y}} x
 )
    (<(0;'2022-06-08')) getKeysIxs rightData
 0 0 0 0 0 0 0 0 0 1 0
@@ -3817,7 +3817,7 @@ newh,: {{ <,.>y{1{tmp_res }}"0 i.$newh
 │Tue    │24    │
 └───────┴──────┘
 
-   NB. And finally
+   NB. And first version with hardcoded indices
    leftJoin=: 4 : 0
 toIter=. >0{ ,}.>1{x
 newh=:(<<<0){{.>1{y
@@ -3979,6 +3979,43 @@ tmp_left_i=: >0{x
 │└─┴──┘│└─┴───┘│
 └──────┴───────┘
 ```
+
+The second version with not-hardcoded, but expecting to be the same indices for left and right tables:
+```j
+leftJoin=: 4 : 0
+assert. ( (>0{y) checkKeys (>1{y) = 1)
+tmp_left_d=: >1{x
+tmp_left_i=: >0{x
+tmp_right_i=: >0{y
+tmp_right_d=: >1{y
+toIter=. {{(2 ,: 2) <;._3 y }}"1 }. toGridFromTable ((2 * $tmp_left_i) $ <'') ,: ,{{ (<((nrows tmp_left_d), 1) $ (nrows tmp_left_d) $ y), y{ ,}. tmp_left_d }}"0 tmp_left_i
+newcols=. 0 ]F:. {{x getKeyFields tmp_right_d }} toIter
+newh=:(<<<tmp_right_i){{.>1{y
+tmp_res=: toTableFromGrid newh,newcols
+tmp_cols=: newh,: {{ <,.>y{1{tmp_res }}"0 i.$newh
+(>1{x) ]F.. {{ ( (>x{0{tmp_cols); x{1{tmp_cols) addColumn y }} (i.}. $tmp_cols)
+)
+   ((0,1);<left) leftJoin ((0,1);<right)
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field1│field2│field3│field4│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │a     │1     │f1    │dog   │
+│k1  │kk2 │b     │11    │f2    │cat   │
+│k2  │kk1 │c     │10    │      │      │
+│k3  │kk2 │d     │2     │      │      │
+│k3  │kk1 │f     │21    │f3    │snake │
+│k3  │kk3 │a     │20    │      │      │
+│k1  │kk4 │a     │1     │      │      │
+│k4  │kk1 │b     │11    │      │      │
+│k5  │kk5 │c     │10    │f4    │bird  │
+│k6  │kk2 │g     │33    │      │      │
+│k7  │kk2 │z     │5     │f9    │spider│
+│k7  │kk3 │v     │6     │      │      │
+└────┴────┴──────┴──────┴──────┴──────┘
+```
+
+The last modification is to make sure the indices of keys for both left and right tables could be arbitrary.
+
 
 ### Advanced grouping
 ### Null values
