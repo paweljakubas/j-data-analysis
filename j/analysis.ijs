@@ -2040,11 +2040,17 @@ NB. │   ││table1││
 NB. │   │└──────┘│
 NB. └───┴────────┘
 leftJoin=: 4 : 0
-toIter=. >0{ ,}.>1{x
-newh=:(<<<0){{.>1{y
-tmp_right=: >1{y
-newc=.0 ]F:. {{(<(0;x)) getKeyFields tmp_right }} toIter
-tmp_res=: toTableFromGrid newh,newc
+assert. ( (>0{y) checkKeys (>1{y) = 1)
+tmp_left_d=: >1{x
+tmp_left_i=: >0{x
+tmp_right_i=: >0{y
+tmp_right_d=: >1{y
+assert. (($tmp_left_i) = $tmp_right_i )
+ixs=. tmp_left_i ,. tmp_right_i
+toIter=. {{(2 ,: 2) <;._3 y }}"1 }. toGridFromTable ((2 * $tmp_left_i) $ <'') ,: , {{ (<(((nrows tmp_left_d),1) $ 1{y)),(0{y){ ,}. tmp_left_d }}"1 ixs
+newcols=. 0 ]F:. {{x getKeyFields tmp_right_d }} toIter
+newh=:(<<<tmp_right_i){{.>1{y
+tmp_res=: toTableFromGrid newh,newcols
 tmp_cols=: newh,: {{ <,.>y{1{tmp_res }}"0 i.$newh
 (>1{x) ]F.. {{ ( (>x{0{tmp_cols); x{1{tmp_cols) addColumn y }} (i.}. $tmp_cols)
 )
@@ -2109,3 +2115,86 @@ NB. │2022-06-01│2.9160 │5Y   │US     │Wed    │22    │
 NB. │2022-05-30│2.8097 │10Y  │US     │Mon    │22    │
 NB. │2022-06-14│3.6013 │5Y   │US     │Tue    │24    │
 NB. └──────────┴───────┴─────┴───────┴───────┴──────┘
+
+NB.    ]left=: toTableFromCSV 'datasets/left.csv'
+NB. ┌────┬────┬──────┬──────┐
+NB. │key1│key2│field1│field2│
+NB. ├────┼────┼──────┼──────┤
+NB. │k1  │kk1 │a     │1     │
+NB. │k1  │kk2 │b     │11    │
+NB. │k2  │kk1 │c     │10    │
+NB. │k3  │kk2 │d     │2     │
+NB. │k3  │kk1 │f     │21    │
+NB. │k3  │kk3 │a     │20    │
+NB. │k1  │kk4 │a     │1     │
+NB. │k4  │kk1 │b     │11    │
+NB. │k5  │kk5 │c     │10    │
+NB. │k6  │kk2 │g     │33    │
+NB. │k7  │kk2 │z     │5     │
+NB. │k7  │kk3 │v     │6     │
+NB. └────┴────┴──────┴──────┘
+NB.    ]right=: toTableFromCSV 'datasets/right.csv'
+NB. ┌────┬────┬──────┬──────┐
+NB. │key1│key2│field3│field4│
+NB. ├────┼────┼──────┼──────┤
+NB. │k1  │kk1 │f1    │dog   │
+NB. │k1  │kk2 │f2    │cat   │
+NB. │k3  │kk1 │f3    │snake │
+NB. │k1  │kk3 │f4    │frog  │
+NB. │k4  │kk2 │f3    │horse │
+NB. │k8  │kk1 │f1    │bug   │
+NB. │k5  │kk5 │f4    │bird  │
+NB. │k6  │kk1 │f5    │dog   │
+NB. │k7  │kk2 │f9    │spider│
+NB. │k7  │kk4 │f2    │tiger │
+NB. └────┴────┴──────┴──────┘
+NB.    ((0,1);<left) leftJoin ((0,1);<right)
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field1│field2│field3│field4│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │a     │1     │f1    │dog   │
+NB. │k1  │kk2 │b     │11    │f2    │cat   │
+NB. │k2  │kk1 │c     │10    │      │      │
+NB. │k3  │kk2 │d     │2     │      │      │
+NB. │k3  │kk1 │f     │21    │f3    │snake │
+NB. │k3  │kk3 │a     │20    │      │      │
+NB. │k1  │kk4 │a     │1     │      │      │
+NB. │k4  │kk1 │b     │11    │      │      │
+NB. │k5  │kk5 │c     │10    │f4    │bird  │
+NB. │k6  │kk2 │g     │33    │      │      │
+NB. │k7  │kk2 │z     │5     │f9    │spider│
+NB. │k7  │kk3 │v     │6     │      │      │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
+NB.    ]right1=: (0,3) exchangeColumns right
+NB. ┌──────┬────┬──────┬────┐
+NB. │field4│key2│field3│key1│
+NB. ├──────┼────┼──────┼────┤
+NB. │dog   │kk1 │f1    │k1  │
+NB. │cat   │kk2 │f2    │k1  │
+NB. │snake │kk1 │f3    │k3  │
+NB. │frog  │kk3 │f4    │k1  │
+NB. │horse │kk2 │f3    │k4  │
+NB. │bug   │kk1 │f1    │k8  │
+NB. │bird  │kk5 │f4    │k5  │
+NB. │dog   │kk1 │f5    │k6  │
+NB. │spider│kk2 │f9    │k7  │
+NB. │tiger │kk4 │f2    │k7  │
+NB. └──────┴────┴──────┴────┘
+NB.
+NB.    ((0,1);<left) leftJoin ((3,1);<right1)
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field1│field2│field4│field3│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │a     │1     │dog   │f1    │
+NB. │k1  │kk2 │b     │11    │cat   │f2    │
+NB. │k2  │kk1 │c     │10    │      │      │
+NB. │k3  │kk2 │d     │2     │      │      │
+NB. │k3  │kk1 │f     │21    │snake │f3    │
+NB. │k3  │kk3 │a     │20    │      │      │
+NB. │k1  │kk4 │a     │1     │      │      │
+NB. │k4  │kk1 │b     │11    │      │      │
+NB. │k5  │kk5 │c     │10    │bird  │f4    │
+NB. │k6  │kk2 │g     │33    │      │      │
+NB. │k7  │kk2 │z     │5     │spider│f9    │
+NB. │k7  │kk3 │v     │6     │      │      │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
