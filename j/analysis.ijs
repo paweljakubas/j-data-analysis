@@ -2198,3 +2198,79 @@ NB. │k6  │kk2 │g     │33    │      │      │
 NB. │k7  │kk2 │z     │5     │spider│f9    │
 NB. │k7  │kk3 │v     │6     │      │      │
 NB. └────┴────┴──────┴──────┴──────┴──────┘
+
+NB. Right join of x and y
+NB. Both x and y assumes to take the following shape
+NB. ┌───┬────────┐
+NB. │ixs│┌──────┐│
+NB. │   ││table1││
+NB. │   │└──────┘│
+NB. └───┴────────┘
+rightJoin=: leftJoin~
+
+NB. Example
+NB.    ((0,1);<right) rightJoin ((0,1);<left)
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field1│field2│field3│field4│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │a     │1     │f1    │dog   │
+NB. │k1  │kk2 │b     │11    │f2    │cat   │
+NB. │k2  │kk1 │c     │10    │      │      │
+NB. │k3  │kk2 │d     │2     │      │      │
+NB. │k3  │kk1 │f     │21    │f3    │snake │
+NB. │k3  │kk3 │a     │20    │      │      │
+NB. │k1  │kk4 │a     │1     │      │      │
+NB. │k4  │kk1 │b     │11    │      │      │
+NB. │k5  │kk5 │c     │10    │f4    │bird  │
+NB. │k6  │kk2 │g     │33    │      │      │
+NB. │k7  │kk2 │z     │5     │f9    │spider│
+NB. │k7  │kk3 │v     │6     │      │      │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
+NB.    ((3,1);<right1) rightJoin ((0,1);<left)
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field1│field2│field4│field3│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │a     │1     │dog   │f1    │
+NB. │k1  │kk2 │b     │11    │cat   │f2    │
+NB. │k2  │kk1 │c     │10    │      │      │
+NB. │k3  │kk2 │d     │2     │      │      │
+NB. │k3  │kk1 │f     │21    │snake │f3    │
+NB. │k3  │kk3 │a     │20    │      │      │
+NB. │k1  │kk4 │a     │1     │      │      │
+NB. │k4  │kk1 │b     │11    │      │      │
+NB. │k5  │kk5 │c     │10    │bird  │f4    │
+NB. │k6  │kk2 │g     │33    │      │      │
+NB. │k7  │kk2 │z     │5     │spider│f9    │
+NB. │k7  │kk3 │v     │6     │      │      │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
+NB.
+NB.    ((0,1);<left) rightJoin ((0,1);<right)
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field3│field4│field1│field2│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │f1    │dog   │a     │1     │
+NB. │k1  │kk2 │f2    │cat   │b     │11    │
+NB. │k3  │kk1 │f3    │snake │f     │21    │
+NB. │k1  │kk3 │f4    │frog  │      │      │
+NB. │k4  │kk2 │f3    │horse │      │      │
+NB. │k8  │kk1 │f1    │bug   │      │      │
+NB. │k5  │kk5 │f4    │bird  │c     │10    │
+NB. │k6  │kk1 │f5    │dog   │      │      │
+NB. │k7  │kk2 │f9    │spider│z     │5     │
+NB. │k7  │kk4 │f2    │tiger │      │      │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
+NB.    ((0,1);<left) rightJoin ((3,1);<right1)
+NB. ┌──────┬────┬──────┬────┬──────┬──────┐
+NB. │field4│key2│field3│key1│field1│field2│
+NB. ├──────┼────┼──────┼────┼──────┼──────┤
+NB. │dog   │kk1 │f1    │k1  │a     │1     │
+NB. │cat   │kk2 │f2    │k1  │b     │11    │
+NB. │snake │kk1 │f3    │k3  │f     │21    │
+NB. │frog  │kk3 │f4    │k1  │      │      │
+NB. │horse │kk2 │f3    │k4  │      │      │
+NB. │bug   │kk1 │f1    │k8  │      │      │
+NB. │bird  │kk5 │f4    │k5  │c     │10    │
+NB. │dog   │kk1 │f5    │k6  │      │      │
+NB. │spider│kk2 │f9    │k7  │z     │5     │
+NB. │tiger │kk4 │f2    │k7  │      │      │
+NB. └──────┴────┴──────┴────┴──────┴──────┘

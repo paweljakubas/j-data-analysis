@@ -4069,6 +4069,80 @@ tmp_cols=: newh,: {{ <,.>y{1{tmp_res }}"0 i.$newh
 └────┴────┴──────┴──────┴──────┴──────┘
 ```
 
+Right join is straightforward when we have `leftJoin`:
+```j
+   rightJoin=: leftJoin~
+
+   NB. we can recreate the above results by exchanging arguments
+   ((0,1);<right) rightJoin ((0,1);<left)
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field1│field2│field3│field4│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │a     │1     │f1    │dog   │
+│k1  │kk2 │b     │11    │f2    │cat   │
+│k2  │kk1 │c     │10    │      │      │
+│k3  │kk2 │d     │2     │      │      │
+│k3  │kk1 │f     │21    │f3    │snake │
+│k3  │kk3 │a     │20    │      │      │
+│k1  │kk4 │a     │1     │      │      │
+│k4  │kk1 │b     │11    │      │      │
+│k5  │kk5 │c     │10    │f4    │bird  │
+│k6  │kk2 │g     │33    │      │      │
+│k7  │kk2 │z     │5     │f9    │spider│
+│k7  │kk3 │v     │6     │      │      │
+└────┴────┴──────┴──────┴──────┴──────┘
+   ((3,1);<right1) rightJoin ((0,1);<left)
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field1│field2│field4│field3│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │a     │1     │dog   │f1    │
+│k1  │kk2 │b     │11    │cat   │f2    │
+│k2  │kk1 │c     │10    │      │      │
+│k3  │kk2 │d     │2     │      │      │
+│k3  │kk1 │f     │21    │snake │f3    │
+│k3  │kk3 │a     │20    │      │      │
+│k1  │kk4 │a     │1     │      │      │
+│k4  │kk1 │b     │11    │      │      │
+│k5  │kk5 │c     │10    │bird  │f4    │
+│k6  │kk2 │g     │33    │      │      │
+│k7  │kk2 │z     │5     │spider│f9    │
+│k7  │kk3 │v     │6     │      │      │
+└────┴────┴──────┴──────┴──────┴──────┘
+
+   NB. Another right join examples
+   ((0,1);<left) rightJoin ((0,1);<right)
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field3│field4│field1│field2│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │f1    │dog   │a     │1     │
+│k1  │kk2 │f2    │cat   │b     │11    │
+│k3  │kk1 │f3    │snake │f     │21    │
+│k1  │kk3 │f4    │frog  │      │      │
+│k4  │kk2 │f3    │horse │      │      │
+│k8  │kk1 │f1    │bug   │      │      │
+│k5  │kk5 │f4    │bird  │c     │10    │
+│k6  │kk1 │f5    │dog   │      │      │
+│k7  │kk2 │f9    │spider│z     │5     │
+│k7  │kk4 │f2    │tiger │      │      │
+└────┴────┴──────┴──────┴──────┴──────┘
+   ((0,1);<left) rightJoin ((3,1);<right1)
+┌──────┬────┬──────┬────┬──────┬──────┐
+│field4│key2│field3│key1│field1│field2│
+├──────┼────┼──────┼────┼──────┼──────┤
+│dog   │kk1 │f1    │k1  │a     │1     │
+│cat   │kk2 │f2    │k1  │b     │11    │
+│snake │kk1 │f3    │k3  │f     │21    │
+│frog  │kk3 │f4    │k1  │      │      │
+│horse │kk2 │f3    │k4  │      │      │
+│bug   │kk1 │f1    │k8  │      │      │
+│bird  │kk5 │f4    │k5  │c     │10    │
+│dog   │kk1 │f5    │k6  │      │      │
+│spider│kk2 │f9    │k7  │z     │5     │
+│tiger │kk4 │f2    │k7  │      │      │
+└──────┴────┴──────┴────┴──────┴──────┘
+
+```
+
 ### Advanced grouping
 ### Null values
 ### Summary
