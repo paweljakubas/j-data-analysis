@@ -2032,7 +2032,7 @@ NB. │Wed│
 NB. └───┘
 
 
-NB. Left join of x and y
+NB. Outer left join of x and y
 NB. Both x and y assumes to take the following shape
 NB. ┌───┬────────┐
 NB. │ixs│┌──────┐│
@@ -2199,7 +2199,7 @@ NB. │k7  │kk2 │z     │5     │spider│f9    │
 NB. │k7  │kk3 │v     │6     │      │      │
 NB. └────┴────┴──────┴──────┴──────┴──────┘
 
-NB. Right join of x and y
+NB. Outer right join of x and y
 NB. Both x and y assumes to take the following shape
 NB. ┌───┬────────┐
 NB. │ixs│┌──────┐│

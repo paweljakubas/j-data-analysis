@@ -4143,6 +4143,53 @@ Right join is straightforward when we have `leftJoin`:
 
 ```
 
+Outer full join retains all keys from left and right keys and fills in values from the other table and retrieving from the one.
+In order to construct such a join one needs to retrieve first unique keys among both tables.
+```j
+   outerJoin=: 4 : 0
+assert. ( (>0{y) checkKeys (>1{y) = 1)
+tmp_left_d=: >1{x
+tmp_left_i=: >0{x
+tmp_right_i=: >0{y
+tmp_right_d=: >1{y
+assert. (($tmp_left_i) = $tmp_right_i )
+keysL=. {{ <y }}"1 }. toGridFromTable (($tmp_left_i) $ <'') ,: ,{{ y{ ,}. tmp_left_d }}"0 tmp_left_i
+keysR=. {{ <y }}"1 }. toGridFromTable (($tmp_right_i) $ <'') ,: ,{{ y{ ,}. tmp_right_d }}"0 tmp_right_i
+keys=. {./.~ keysL,keysR
+)
+   ((0,1);<left) outerJoin ((0,1);<right)
+┌────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┐
+│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│┌──┬───┐│
+││k1│kk1│││k1│kk2│││k2│kk1│││k3│kk2│││k3│kk1│││k3│kk3│││k1│kk4│││k4│kk1│││k5│kk5│││k6│kk2│││k7│kk2│││k7│kk3│││k1│kk3│││k4│kk2│││k8│kk1│││k6│kk1│││k7│kk4││
+│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│└──┴───┘│
+└────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┘
+```
+
+When having those keys one will want to decorate them with indices and box like it was done before
+```j
+   ,(0;1),.('k1';'kk1')
+┌─┬──┬─┬───┐
+│0│k1│1│kk1│
+└─┴──┴─┴───┘
+   ,(0;1;8),.('k1';'kk1';'kkk2')
+┌─┬──┬─┬───┬─┬────┐
+│0│k1│1│kk1│8│kkk2│
+└─┴──┴─┴───┴─┴────┘
+   NB. and using tiling
+   {{(2 ,: 2) <;._3 y }}"1 ,(0;1),.('k1';'kk1')
+┌──────┬───────┐
+│┌─┬──┐│┌─┬───┐│
+││0│k1│││1│kk1││
+│└─┴──┘│└─┴───┘│
+└──────┴───────┘
+   {{(2 ,: 2) <;._3 y }}"1 ,(0;1;8),.('k1';'kk1';'kkk2')
+┌──────┬───────┬────────┐
+│┌─┬──┐│┌─┬───┐│┌─┬────┐│
+││0│k1│││1│kk1│││8│kkk2││
+│└─┴──┘│└─┴───┘│└─┴────┘│
+└──────┴───────┴────────┘
+```
+
 ### Advanced grouping
 ### Null values
 ### Summary
