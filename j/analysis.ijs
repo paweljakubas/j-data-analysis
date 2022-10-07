@@ -2053,8 +2053,7 @@ toIter=. {{(2 ,: 2) <;._3 y }}"1 }. toGridFromTable ((2 * $tmp_left_i) $ <'') ,:
 newcols=. 0 ]F:. {{x getKeyFields tmp_right_d }} toIter
 newh=:(<<<tmp_right_i){{.>1{y
 tmp_res=: toTableFromGrid newh,newcols
-tmp_cols=: newh,: {{ <,.>y{1{tmp_res }}"0 i.$newh
-(>1{x) ]F.. {{ ( (>x{0{tmp_cols); x{1{tmp_cols) addColumn y }} (i.}. $tmp_cols)
+(>1{x) ]F.. {{ ( (>x{0{tmp_res); x{1{tmp_res) addColumn y }} (i.}. $tmp_res)
 )
 NB. Example
 NB.    ]left=: 0;<a
@@ -2276,3 +2275,77 @@ NB. │dog   │kk1 │f5    │k6  │      │      │
 NB. │spider│kk2 │f9    │k7  │z     │5     │
 NB. │tiger │kk4 │f2    │k7  │      │      │
 NB. └──────┴────┴──────┴────┴──────┴──────┘
+
+NB. Outer full join of x and y
+NB. Both x and y assumes to take the following shape
+NB. ┌───┬────────┐
+NB. │ixs│┌──────┐│
+NB. │   ││table1││
+NB. │   │└──────┘│
+NB. └───┴────────┘
+outerJoin=: 4 : 0
+assert. ( (>0{y) checkKeys (>1{y) = 1)
+tmp_left_d=: >1{x
+tmp_left_i=: >0{x
+tmp_right_i=: >0{y
+tmp_right_d=: >1{y
+assert. (($tmp_left_i) = $tmp_right_i )
+keysL=. {{ <y }}"1 }. toGridFromTable (($tmp_left_i) $ <'') ,: ,{{ y{ ,}. tmp_left_d }}"0 tmp_left_i
+keysR=. {{ <y }}"1 }. toGridFromTable (($tmp_right_i) $ <'') ,: ,{{ y{ ,}. tmp_right_d }}"0 tmp_right_i
+keys=. {./.~ keysL,keysR
+ixL=. {{(2 ,: 2) <;._3 y }}"1 {{ ,((<"0) tmp_left_i),. >y }}"0 keys
+ixR=. {{(2 ,: 2) <;._3 y }}"1 {{ ,((<"0) tmp_right_i),. >y }}"0 keys
+colL=. 0 ]F:. {{x getKeyFields tmp_left_d }} ixL
+colR=. 0 ]F:. {{x getKeyFields tmp_right_d }} ixR
+vals=. (>keys),.colL,.colR
+hK=.tmp_right_i {{.>1{y
+hR=.(<<<tmp_right_i){{.>1{y
+hL=.(<<<tmp_left_i){{.>1{x
+toTableFromGrid (hK,hL,hR),vals
+)
+NB. Example
+NB.    ((0,1);<left) outerJoin ((0,1);<right)
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field1│field2│field3│field4│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │a     │1     │f1    │dog   │
+NB. │k1  │kk2 │b     │11    │f2    │cat   │
+NB. │k2  │kk1 │c     │10    │      │      │
+NB. │k3  │kk2 │d     │2     │      │      │
+NB. │k3  │kk1 │f     │21    │f3    │snake │
+NB. │k3  │kk3 │a     │20    │      │      │
+NB. │k1  │kk4 │a     │1     │      │      │
+NB. │k4  │kk1 │b     │11    │      │      │
+NB. │k5  │kk5 │c     │10    │f4    │bird  │
+NB. │k6  │kk2 │g     │33    │      │      │
+NB. │k7  │kk2 │z     │5     │f9    │spider│
+NB. │k7  │kk3 │v     │6     │      │      │
+NB. │k1  │kk3 │      │      │f4    │frog  │
+NB. │k4  │kk2 │      │      │f3    │horse │
+NB. │k8  │kk1 │      │      │f1    │bug   │
+NB. │k6  │kk1 │      │      │f5    │dog   │
+NB. │k7  │kk4 │      │      │f2    │tiger │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
+NB.
+NB.    ((0,1);<left) outerJoin ((3,1);<right1)
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field1│field2│field4│field3│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │a     │1     │dog   │f1    │
+NB. │k1  │kk2 │b     │11    │cat   │f2    │
+NB. │k2  │kk1 │c     │10    │      │      │
+NB. │k3  │kk2 │d     │2     │      │      │
+NB. │k3  │kk1 │f     │21    │snake │f3    │
+NB. │k3  │kk3 │a     │20    │      │      │
+NB. │k1  │kk4 │a     │1     │      │      │
+NB. │k4  │kk1 │b     │11    │      │      │
+NB. │k5  │kk5 │c     │10    │bird  │f4    │
+NB. │k6  │kk2 │g     │33    │      │      │
+NB. │k7  │kk2 │z     │5     │spider│f9    │
+NB. │k7  │kk3 │v     │6     │      │      │
+NB. │k1  │kk3 │      │      │frog  │f4    │
+NB. │k4  │kk2 │      │      │horse │f3    │
+NB. │k8  │kk1 │      │      │bug   │f1    │
+NB. │k6  │kk1 │      │      │dog   │f5    │
+NB. │k7  │kk4 │      │      │tiger │f2    │
+NB. └────┴────┴──────┴──────┴──────┴──────┘

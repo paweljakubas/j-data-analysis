@@ -4028,8 +4028,7 @@ toIter=. {{(2 ,: 2) <;._3 y }}"1 }. toGridFromTable ((2 * $tmp_left_i) $ <'') ,:
 newcols=. 0 ]F:. {{x getKeyFields tmp_right_d }} toIter
 newh=:(<<<tmp_right_i){{.>1{y
 tmp_res=: toTableFromGrid newh,newcols
-tmp_cols=: newh,: {{ <,.>y{1{tmp_res }}"0 i.$newh
-(>1{x) ]F.. {{ ( (>x{0{tmp_cols); x{1{tmp_cols) addColumn y }} (i.}. $tmp_cols)
+(>1{x) ]F.. {{ ( (>x{0{tmp_res); x{1{tmp_res) addColumn y }} (i.}. $tmp_res)
 )
 
    ((0,1);<left) leftJoin ((0,1);<right)
@@ -4303,6 +4302,30 @@ hL=.(<<<tmp_left_i){{.>1{x
 ├────┼────┼──────┼──────┼──────┼──────┤
 │k6  │kk1 │      │      │dog   │f5    │
 ├────┼────┼──────┼──────┼──────┼──────┤
+│k7  │kk4 │      │      │tiger │f2    │
+└────┴────┴──────┴──────┴──────┴──────┘
+
+   NB. Finally, what under outerJoin in j/analysis.ijs
+   toTableFromGrid ((0,1);<left) outerJoin ((3,1);<right1)
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field1│field2│field4│field3│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │a     │1     │dog   │f1    │
+│k1  │kk2 │b     │11    │cat   │f2    │
+│k2  │kk1 │c     │10    │      │      │
+│k3  │kk2 │d     │2     │      │      │
+│k3  │kk1 │f     │21    │snake │f3    │
+│k3  │kk3 │a     │20    │      │      │
+│k1  │kk4 │a     │1     │      │      │
+│k4  │kk1 │b     │11    │      │      │
+│k5  │kk5 │c     │10    │bird  │f4    │
+│k6  │kk2 │g     │33    │      │      │
+│k7  │kk2 │z     │5     │spider│f9    │
+│k7  │kk3 │v     │6     │      │      │
+│k1  │kk3 │      │      │frog  │f4    │
+│k4  │kk2 │      │      │horse │f3    │
+│k8  │kk1 │      │      │bug   │f1    │
+│k6  │kk1 │      │      │dog   │f5    │
 │k7  │kk4 │      │      │tiger │f2    │
 └────┴────┴──────┴──────┴──────┴──────┘
 ```
