@@ -53,7 +53,9 @@ toGridFromTable=: 3 : 0
 
 NB. transform from grid view to table view
 toTableFromGrid=: 3 : 0
-({.,:,each/@:(,:each)@}.) y
+tmp_res=: ({.,:,each/@:(,:each)@}.) y
+h=. 0{tmp_res
+h,: {{ <,.>y{1{tmp_res }}"0 i.$h
 )
 
 NB. dump inverted table x to CSV file y
