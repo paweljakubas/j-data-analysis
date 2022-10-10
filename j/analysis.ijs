@@ -2349,3 +2349,43 @@ NB. │k8  │kk1 │      │      │bug   │f1    │
 NB. │k6  │kk1 │      │      │dog   │f5    │
 NB. │k7  │kk4 │      │      │tiger │f2    │
 NB. └────┴────┴──────┴──────┴──────┴──────┘
+
+NB. Inner full join of x and y
+NB. Both x and y assumes to take the following shape
+NB. ┌───┬────────┐
+NB. │ixs│┌──────┐│
+NB. │   ││table1││
+NB. │   │└──────┘│
+NB. └───┴────────┘
+innerJoin=: 4 : 0
+res=. x leftJoin y
+tmp_left_d=: >1{x
+tmp_left_i=: >0{x
+tmp_right_i=: >0{y
+tmp_right_d=. >1{y
+keysL=. {{ <y }}"1 }. toGridFromTable (($tmp_left_i) $ <'') ,: ,{{ y{ ,}. tmp_left_d }}"0 tmp_left_i
+ixR=. {{(2 ,: 2) <;._3 y }}"1 {{ ,((<"0) tmp_right_i),. >y }}"0 keysL
+ixs=. ({{ +/ y getKeysIxs tmp_right_d }}"1 ixR) # i.nrows tmp_left_d
+ixs rowsFromTable res
+)
+NB. Example
+NB.    ((0,1);<left) innerJoin ((0,1);<right)
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field1│field2│field3│field4│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │a     │1     │f1    │dog   │
+NB. │k1  │kk2 │b     │11    │f2    │cat   │
+NB. │k3  │kk1 │f     │21    │f3    │snake │
+NB. │k5  │kk5 │c     │10    │f4    │bird  │
+NB. │k7  │kk2 │z     │5     │f9    │spider│
+NB. └────┴────┴──────┴──────┴──────┴──────┘
+NB.    ((0,1);<left) innerJoin ((3,1);<right1)
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field1│field2│field4│field3│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │a     │1     │dog   │f1    │
+NB. │k1  │kk2 │b     │11    │cat   │f2    │
+NB. │k3  │kk1 │f     │21    │snake │f3    │
+NB. │k5  │kk5 │c     │10    │bird  │f4    │
+NB. │k7  │kk2 │z     │5     │spider│f9    │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
