@@ -3824,8 +3824,7 @@ newh=:(<<<0){{.>1{y
 tmp_right=: >1{y
 newc=.0 ]F:. {{(<(0;x)) getKeyFields tmp_right }} toIter
 tmp_res=: toTableFromGrid newh,newc
-tmp_cols=: newh,: {{ <,.>y{1{tmp_res }}"0 i.$newh
-(>1{x) ]F.. {{ ( (>x{0{tmp_cols); x{1{tmp_cols) addColumn y }} (i.}. $tmp_cols)
+(>1{x) ]F.. {{ ( (>x{0{tmp_res); x{1{tmp_res) addColumn y }} (i.}. $tmp_res)
 )
    left leftJoin right
 ┌──────────┬───────┬─────┬───────┬───────┬──────┐
@@ -3992,8 +3991,7 @@ toIter=. {{(2 ,: 2) <;._3 y }}"1 }. toGridFromTable ((2 * $tmp_left_i) $ <'') ,:
 newcols=. 0 ]F:. {{x getKeyFields tmp_right_d }} toIter
 newh=:(<<<tmp_right_i){{.>1{y
 tmp_res=: toTableFromGrid newh,newcols
-tmp_cols=: newh,: {{ <,.>y{1{tmp_res }}"0 i.$newh
-(>1{x) ]F.. {{ ( (>x{0{tmp_cols); x{1{tmp_cols) addColumn y }} (i.}. $tmp_cols)
+(>1{x) ]F.. {{ ( (>x{0{tmp_res); x{1{tmp_res) addColumn y }} (i.}. $tmp_res)
 )
    ((0,1);<left) leftJoin ((0,1);<right)
 ┌────┬────┬──────┬──────┬──────┬──────┐
@@ -4330,6 +4328,28 @@ hL=.(<<<tmp_left_i){{.>1{x
 └────┴────┴──────┴──────┴──────┴──────┘
 ```
 
+Inner join can be delivered by calculating `leftJoin` and filtering out rows that have keys which are missing in right table.
+```j
+   innerJoin=: 4 : 0
+res=. x leftJoin y
+tmp_left_d=: >1{x
+tmp_left_i=: >0{x
+left_keys=. {{(2 ,: 2) <;._3 y }}"1 }. toGridFromTable ((2 * $tmp_left_i) $ <'') ,: ,{{ (<((nrows tmp_left_d), 1) $ (nrows tmp_left_d) $ y), y{ ,}. tmp_left_d }}"0 tmp_left_i
+tmp_right_d=. >1{y
+ixs=. ({{ +/ y getKeysIxs tmp_right_d }}"1 left_keys) # i.nrows tmp_left_d
+ixs rowsFromTable res
+)
+   ((0,1);<left) innerJoin ((0,1);<right)
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field1│field2│field3│field4│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │a     │1     │f1    │dog   │
+│k1  │kk2 │b     │11    │f2    │cat   │
+│k3  │kk1 │f     │21    │f3    │snake │
+│k5  │kk5 │c     │10    │f4    │bird  │
+│k7  │kk2 │z     │5     │f9    │spider│
+└────┴────┴──────┴──────┴──────┴──────┘
+```
 
 ### Advanced grouping
 ### Null values
