@@ -2933,6 +2933,7 @@ So we first made customized tenor grouping, ending up with two groups `1Y-10Y` a
 we grouped by `weekno`. Hence we attained nontrivial 2 layer groupping with which we can work further. We can once again further group by
 , for example by `country` or calculate aggregate within six subgroups.
 ```j
+   tenorWeeknoGrouping=: left transformTable tenorGrouping
    (0{tenorWeeknoGrouping) ,: 0 ]F:. {{ <('count'; <(nrows`'')) transformTable >1{,>> x}} 1{tenorWeeknoGrouping
 ┌─────────────────────────────────────┬─────────────────────────────────────┐
 │┌─┬────────┐                         │┌─┬───────┐                          │
