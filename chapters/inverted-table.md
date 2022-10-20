@@ -302,9 +302,10 @@ Let's load bond data in a boxed form and as an inverted table and compare memory
 3840 50176
 ```
 
-In general, an inverted table is very efficient as a data structure when heterogeneous columns are to be stored.
+In general, an inverted table is very efficient as a data structure storing data column-wise.
+At this point all values are `literal` ie. stored as just bytes.
 In the example above the difference favoring the inverted table is one order of magnitude. Hence,
-the inverted table will be a way we will represent heterogeneous columns and try to master.
+the inverted table will be a way we will represent dataframes and try to master.
 
 What is next is an exploration into useful and prevalent operations enaging the inverted table.
 The material is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted_Table] and
@@ -358,6 +359,7 @@ The material is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted_Tab
 │2022-06-14│0.0700 │5Y   │JP     │
 └──────────┴───────┴─────┴───────┘
 
+   NB. From now on we will use nrows from j/analysis.ijs
    NB. Also using functionality from j/analysis.ijs
    3 randomRowsFromTable bonds
 ┌──────────┬───────┬─────┬───────┐
@@ -377,7 +379,7 @@ and then use those indices to select rows as in the previous section.
 ```j
    3.4 <: ". >(<(<0),(<1)){ }.bonds
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
-   ]ixs=: (3.4 <: ". (>(<(<0),(<1)){ }.bonds) ) # i.nrows
+   ]ixs=: (3.4 <: ". (>(<(<0),(<1)){ }.bonds) ) # i.nrows bonds
 69 70 85
    NB. Notice ". which converts string to numbers (if possible). This is needed if a given column has literal datatype.
 
@@ -403,7 +405,7 @@ We can request `quote >= 3.4` but only for 5y tenor, ie., if `tenor == 5Y`.
    NB. now we can fuse ixs1 and ixs2 through *. (AND operator)
    ]ixs=: ixs1 *. ixs2
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-   ]ixss=: ixs # i.nrows
+   ]ixss=: ixs # i.nrows bonds
 69 70
    ixss rowsFromTable bonds
 ┌──────────┬───────┬─────┬───────┐
@@ -438,7 +440,7 @@ Now let's request data slice for trading week from 2022-06-06 to 2022-06-10.
    NB. Now we can impose predicates using the inline functionality.
    ]ixs=: {{(6 = ".>2{y) *. ((6,7,8,9,10) e.~ ".>4{y)}}"1;:>(<(<0),(<0)){ }. bonds
 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0
-   ]ixss=: ixs # i.nrows
+   ]ixss=: ixs # i.nrows bonds
 5 6 7 8 9 20 21 22 23 24 35 36 37 38 39 49 50 51 52 53 64 65 66 67 68 79 80 81 82 83
    ]week=: ixss rowsFromTable bonds
 ┌──────────┬───────┬─────┬───────┐
@@ -478,7 +480,7 @@ Now let's request data slice for trading week from 2022-06-06 to 2022-06-10.
 ```
 
 One can also use `condIxs` function from j/analysis.ijs to get indices for a given condition.
-A number of conditions can then be used to form more complex condition.
+A number of conditions can then be composed to form more complex condition.
 
 ### Order rows
 The another useful task is an ability to order by column. We can order by column using "/:" or "\\:"
@@ -520,6 +522,7 @@ The another useful task is an ability to order by column. We can order by column
 │2022-06-10│3.2637 │5Y   │US     │
 │2022-06-10│3.1649 │10Y  │US     │
 └──────────┴───────┴─────┴───────┘
+   NB. It worked even for `date` column being literal
 
    ]ixs=: \: ;: >(<(<0),(<0)){ }. week
 4 9 14 19 24 29 3 8 13 18 23 28 2 7 12 17 22 27 1 6 11 16 21 26 0 5 10 15 20 25
@@ -561,7 +564,7 @@ The another useful task is an ability to order by column. We can order by column
 ```
 
 For the sake of ordering with more than 1 column (ie., first ordering by column1 then finetune the ordering within the same values of
-the first ordering with column2 ordering, etc.) we will introduce `ranking` as follows:
+the first ordering via column2 ordering, etc.) we will introduce `ranking` as follows:
 ```j
    ranking=: i.!.0~ { /:@/:
    ranking&> }.week
@@ -571,6 +574,11 @@ the first ordering with column2 ordering, etc.) we will introduce `ranking` as f
  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15
 ```
 Upon a close look we can discern patterns reflecting data columns represented in ranking row-wise.
+For example, the first row is associated with `date` column values. We have the following values in
+`week` table: `2022-06-06`, `2022-06-07`, .. and the corresponding ranks: `0`, `6`, ..
+`2022-06-06` is the first value upon the adopted ordering and there are 6 occurences of them in
+`week` table. Hence, all `2022-06-06` rows have `0` representation, all `2022-06-07` rows have `6`
+representation and so on.
 
 ```j
    tgrade=: /: @ |: @: (ranking&>)
@@ -647,7 +655,8 @@ Upon a close look we can discern patterns reflecting data columns represented in
 └──────────┴───────┴─────┴───────┘
 ```
 We see that table was ordered by `date` column at first. Then within the same `date` value
-rows `quote` values are ordered in ascending order (but in lexicographical sense!). As they are unique the ordering by the rest
+the rows are ordered according to `quote` value in an ascending order (but in lexicographical sense!
+as `quote` values here are treated as literals). As they are unique the ordering by the rest
 columns is omitted.
 
 We might want more fine-grained control over ordering. For example, we might request to
@@ -660,7 +669,7 @@ In order to achieve that we need to change how ranking matrix looks like.
 10 10 10 10 10 20 20 20 20 20 0 0  0  0  0 10 10 10 10 10 20 20 20 20 20 0 0  0  0  0
  0  0  0  0  0  0  0  0  0  0 0 0  0  0  0  0  0  0  0  0  0  0  0  0  0 0 0  0  0  0
 
-   NB. so we left ranking only for date and for tenor.
+   NB. so we have left ranking rows only for date and for tenor.
    tgrade=: /: @ |: @: {{ranking1}}
    tsort=: <@tgrade {&.> ]
    (({.),((,.&.>) @ (tsort @ }.))) week
@@ -700,7 +709,8 @@ In order to achieve that we need to change how ranking matrix looks like.
 └──────────┴───────┴─────┴───────┘
 ```
 
-What if we want to ensure ascending ordering for `date` and descending for `tenor`. Once again we can manufacture
+Lexicographically, tenor are ordered in an ascending order as `10Y-1Y-5Y`, so the result is expected.
+What if we want to ensure ascending ordering for `date` and descending for `tenor`. Once again we can handcraft the
 ranking matrix.
 ```j
    rankingAsc=: i.!.0~ { /:@/:
@@ -749,13 +759,13 @@ ranking matrix.
 │2022-06-10│0.2500 │10Y  │JP     │
 │2022-06-10│3.1649 │10Y  │US     │
 └──────────┴───────┴─────┴───────┘
-   NB. the functions are also defined in j/algebra.ijs
+   NB. `rankingDesc` and `rankingAsc` are also defined in j/algebra.ijs
 ```
 
-We see tenor is ordered as `10Y - 1Y - 5Y` or `5Y - 1Y - 10Y` which lexicographically is correct
-but we may want to introduce custom ordering like `1Y - 5Y - 10Y` to make it chronological
-(`1Y` stands for one year, and so on). In order to do that we need to
-construct ranking matrix based on this custom ordering.
+We see tenor is ordered as `10Y - 1Y - 5Y` or `5Y - 1Y - 10Y` which is lexicographically correct
+as `tenor` values are of literal type. We may want to introduce custom ordering like `1Y - 5Y - 10Y` to
+reflect chronological order that stands behind them (`1Y` stands for one year, and so on).
+In order to do that we need to construct ranking matrix based on this custom ordering.
 
 ```j
    ]source=: >(<(<0),(<2)){ }. week
@@ -799,6 +809,7 @@ construct ranking matrix based on this custom ordering.
    ixs { 'abbca'
 aabbc
 
+   NB. Notice source has 3-character columns irrespective of value
    ]ord=: '10Y','5Y ',:'1Y '
 10Y
 5Y
@@ -885,9 +896,53 @@ aabbc
 ```
 
 The last task of ordering will be sorting the table by date in an ascending order, then by country, and finally
-by tenor. We will need to realize the exchange of columns `country` and `tenor`, adopt ordering, and bring back initial column positions.
+by tenor. We will need to perform the exchange of the columns `country` and `tenor`, adopt ordering, and bring back initial column positions.
 Why exchange is needed here? Because `country` is after `tenor` the ranking would order the latter first. And we are after
-ordering of the former first and only then the latter.
+ordering of the former first and only then the latter. Let's see first what will happen if we do not perform exchange columns trick.
+
+```j
+   ]ranking4=: ((<(<0),(<0)){rankingAsc&> }.week) ,0,customRankingTenor,:((<(<0),(<2)){rankingAsc&> }.week)
+ 0  6 12 18 24  0  6 12 18 24 0 6 12 18 24  0  6 12 18 24  0  6 12 18 24 0 6 12 18 24
+ 0  0  0  0  0  0  0  0  0  0 0 0  0  0  0  0  0  0  0  0  0  0  0  0  0 0 0  0  0  0
+20 20 20 20 20 10 10 10 10 10 0 0  0  0  0 20 20 20 20 20 10 10 10 10 10 0 0  0  0  0
+10 10 10 10 10 20 20 20 20 20 0 0  0  0  0 10 10 10 10 10 20 20 20 20 20 0 0  0  0  0
+   ranking4 orderFromRanking week
+┌──────────┬───────┬─────┬───────┐
+│date      │quote  │tenor│country│
+├──────────┼───────┼─────┼───────┤
+│2022-06-06│0.2400 │10Y  │JP     │
+│2022-06-06│3.0399 │10Y  │US     │
+│2022-06-06│-0.0040│5Y   │JP     │
+│2022-06-06│3.0368 │5Y   │US     │
+│2022-06-06│-0.0800│1Y   │JP     │
+│2022-06-06│2.1960 │1Y   │US     │
+│2022-06-07│0.2450 │10Y  │JP     │
+│2022-06-07│2.9791 │10Y  │US     │
+│2022-06-07│0.0000 │5Y   │JP     │
+│2022-06-07│2.9906 │5Y   │US     │
+│2022-06-07│-0.0830│1Y   │JP     │
+│2022-06-07│2.2060 │1Y   │US     │
+│2022-06-08│0.2450 │10Y  │JP     │
+│2022-06-08│3.0270 │10Y  │US     │
+│2022-06-08│-0.0100│5Y   │JP     │
+│2022-06-08│3.0355 │5Y   │US     │
+│2022-06-08│-0.0850│1Y   │JP     │
+│2022-06-08│2.2450 │1Y   │US     │
+│2022-06-09│0.2490 │10Y  │JP     │
+│2022-06-09│3.0455 │10Y  │US     │
+│2022-06-09│-0.0100│5Y   │JP     │
+│2022-06-09│3.0702 │5Y   │US     │
+│2022-06-09│-0.0830│1Y   │JP     │
+│2022-06-09│2.3000 │1Y   │US     │
+│2022-06-10│0.2500 │10Y  │JP     │
+│2022-06-10│3.1649 │10Y  │US     │
+│2022-06-10│-0.0040│5Y   │JP     │
+│2022-06-10│3.2637 │5Y   │US     │
+│2022-06-10│-0.0900│1Y   │JP     │
+│2022-06-10│2.5070 │1Y   │US     │
+└──────────┴───────┴─────┴───────┘
+```
+The exchange of columns gives the desired ordering.
 
 ```j
    NB. see j/analysis.ijs
@@ -1006,7 +1061,7 @@ ordering of the former first and only then the latter.
 
 ### Update column
 
-We can use basic update technique, ie., `newval ix } y`, to perform a column updating.
+We can use basic update technique of J, ie., `newval ix } y`, to perform a column updating.
 ```j
 updateColumnVals =: 4 : 0
 'ix col'=:x

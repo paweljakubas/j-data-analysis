@@ -38,8 +38,8 @@ required for powerful data analysis.
 ### [CSV](chapters/csv.md)
 ### [Inverted table](chapters/inverted-table.md)
 ### [Gnuplot](chapters/gnuplot.md)
+### [Inverted table workout and comparison with polar and pandas](chapters/workout.md)
 ### [Data analysis cases using SQL and J's approach]
-### [Performance study: db vs table vs jd]
 ### [Information-based learning]
 ### [Similarity-based learning]
 ### [Deep look at statistical distributions]
