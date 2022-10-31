@@ -1088,6 +1088,78 @@ NB. │2022-06-10│ 2.507│1Y   │US     │
 NB. │2022-06-13│ 0.035│5Y   │JP     │
 NB. │2022-06-09│3.0455│10Y  │US     │
 NB. └──────────┴──────┴─────┴───────┘
+NB.    columnTypes 1 columnAsNum bonds1
+NB. ┌────────┬────────┬────────┬────────┐
+NB. │date    │quote   │tenor   │country │
+NB. ├────────┼────────┼────────┼────────┤
+NB. │literal │floating│literal │literal │
+NB. └────────┴────────┴────────┴────────┘
+
+columnAsLit=: 4 : 0
+size=.${.y
+assert. ( (x >: (- size)) *. (x < size) )
+newvals=. <,. ": >(<(<0),(<x)){ }. y
+(x;newvals) updateColumnVals y
+)
+NB. Example
+NB.    ]bonds1=: 10 randomRowsFromTable bonds
+NB. ┌──────────┬───────┬─────┬───────┐
+NB. │date      │quote  │tenor│country│
+NB. ├──────────┼───────┼─────┼───────┤
+NB. │2022-06-09│3.0455 │10Y  │US     │
+NB. │2022-06-14│0.0700 │5Y   │JP     │
+NB. │2022-06-08│0.2450 │10Y  │JP     │
+NB. │2022-06-01│2.9160 │5Y   │US     │
+NB. │2022-05-30│2.8097 │10Y  │US     │
+NB. │2022-06-14│3.6013 │5Y   │US     │
+NB. │2022-06-14│0.2560 │10Y  │JP     │
+NB. │2022-06-10│2.5070 │1Y   │US     │
+NB. │2022-05-31│0.0040 │5Y   │JP     │
+NB. │2022-06-07│2.9906 │5Y   │US     │
+NB. └──────────┴───────┴─────┴───────┘
+NB.    1 columnAsNum bonds1
+NB. ┌──────────┬──────┬─────┬───────┐
+NB. │date      │quote │tenor│country│
+NB. ├──────────┼──────┼─────┼───────┤
+NB. │2022-06-09│3.0455│10Y  │US     │
+NB. │2022-06-14│  0.07│5Y   │JP     │
+NB. │2022-06-08│ 0.245│10Y  │JP     │
+NB. │2022-06-01│ 2.916│5Y   │US     │
+NB. │2022-05-30│2.8097│10Y  │US     │
+NB. │2022-06-14│3.6013│5Y   │US     │
+NB. │2022-06-14│ 0.256│10Y  │JP     │
+NB. │2022-06-10│ 2.507│1Y   │US     │
+NB. │2022-05-31│ 0.004│5Y   │JP     │
+NB. │2022-06-07│2.9906│5Y   │US     │
+NB. └──────────┴──────┴─────┴───────┘
+NB.    columnTypes 1 columnAsNum bonds1
+NB. ┌────────┬────────┬────────┬────────┐
+NB. │date    │quote   │tenor   │country │
+NB. ├────────┼────────┼────────┼────────┤
+NB. │literal │floating│literal │literal │
+NB. └────────┴────────┴────────┴────────┘
+NB.    1 columnAsLit (1 columnAsNum bonds1)
+NB. ┌──────────┬──────┬─────┬───────┐
+NB. │date      │quote │tenor│country│
+NB. ├──────────┼──────┼─────┼───────┤
+NB. │2022-06-09│3.0455│10Y  │US     │
+NB. │2022-06-14│  0.07│5Y   │JP     │
+NB. │2022-06-08│ 0.245│10Y  │JP     │
+NB. │2022-06-01│ 2.916│5Y   │US     │
+NB. │2022-05-30│2.8097│10Y  │US     │
+NB. │2022-06-14│3.6013│5Y   │US     │
+NB. │2022-06-14│ 0.256│10Y  │JP     │
+NB. │2022-06-10│ 2.507│1Y   │US     │
+NB. │2022-05-31│ 0.004│5Y   │JP     │
+NB. │2022-06-07│2.9906│5Y   │US     │
+NB. └──────────┴──────┴─────┴───────┘
+NB.    columnTypes 1 columnAsLit (1 columnAsNum bonds1)
+NB. ┌───────┬───────┬───────┬───────┐
+NB. │date   │quote  │tenor  │country│
+NB. ├───────┼───────┼───────┼───────┤
+NB. │literal│literal│literal│literal│
+NB. └───────┴───────┴───────┴───────┘
+
 
 NB. Show datatypes of columns of an inverted table y
 columnTypes=: 3 : 0

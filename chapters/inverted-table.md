@@ -1539,7 +1539,7 @@ Sun
 └──────────┴───────┴─────┴───────┴───────┘
 ```
 We can also add column determining week number in a given year basing on `date` column.
-The calculation of weekno is not straightforward though. ISO 8601 defines a standard for the representation of dates,
+The calculation of `weekno` is not straightforward though. ISO 8601 defines a standard for the representation of dates,
 times and time zones. It defines weeks that start on a Monday. It also says Week 1 of a year is the one which contains
 at least 4 days from the given year. Consequently, the 29th, 30th and 31st of December 20xx could be in week 1 of 20xy
 (where xy = xx + 1), and the 1st, 2nd and 3rd of January 20xy could all be in the last week of 20xx.
@@ -2017,7 +2017,7 @@ Tue
 └──────────┴───────┴─────┴───────┴──────┘
 ```
 
-Now let's take 10Y tenors for the US, and add columns that in each week will separately produce
+Now let's take `10Y` tenors for the US, and add columns that in each week will separately produce
 maximum and minium quote for a given date. So in Mon a given quote will be both max and
 min, in Tue it will be max and min calculated from Mon and Tue of a given week, etc.
 We will use fold to realize that, the technique we will use many times in the future.
@@ -2298,7 +2298,7 @@ res0=. 2 1 $ <0$0
 ```
 
 So we have successfully grouped by taking all values and each group is tagged by a single value from column's unique values.
-What about groups that are depicted by several values, with a given value present in several groups?
+What about groups that are depicted by several values, with a given value possibly present in several groups?
 
 ```j
    groupByNumeric=: 4 : 0
@@ -2698,6 +2698,12 @@ for more advanced extensions. Here is an example of its usage:
 ││2022-06-09│3.0455 │10Y  │US     │Thu    │23    ││└──────────┴───────┴─────┴───────┴───────┴──────┘│                                                 │
 │└──────────┴───────┴─────┴───────┴───────┴──────┘│                                                 │                                                 │
 └─────────────────────────────────────────────────┴─────────────────────────────────────────────────┴─────────────────────────────────────────────────┘
+```
+
+If we have `weekno` as literal (which could be a case if we are defering dealing null values to the leatest moment), then
+it will not prohibit us to get the same result.
+```j
+
 ```
 
 More sophisticated grouping will require transforming capabilities and is covered in
