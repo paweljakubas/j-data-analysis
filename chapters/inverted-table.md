@@ -358,6 +358,17 @@ The material is inspired by [https://code.jsoftware.com/wiki/Essays/Inverted_Tab
 │2022-06-03│-0.0090│5Y   │JP     │
 │2022-06-14│0.0700 │5Y   │JP     │
 └──────────┴───────┴─────┴───────┘
+   NB. Or using nrows function fom j/analysis.ijs
+   ({{5?nrows y}} rowsFromTable ]) bonds
+┌──────────┬───────┬─────┬───────┐
+│date      │quote  │tenor│country│
+├──────────┼───────┼─────┼───────┤
+│2022-06-14│3.0520 │1Y   │US     │
+│2022-06-16│0.0380 │5Y   │JP     │
+│2022-06-07│2.9791 │10Y  │US     │
+│2022-06-06│-0.0800│1Y   │JP     │
+│2022-06-03│0.2350 │10Y  │JP     │
+└──────────┴───────┴─────┴───────┘
 
    NB. From now on we will use nrows from j/analysis.ijs
    NB. Also using functionality from j/analysis.ijs
@@ -382,6 +393,7 @@ and then use those indices to select rows as in the previous section.
    ]ixs=: (3.4 <: ". (>(<(<0),(<1)){ }.bonds) ) # i.nrows bonds
 69 70 85
    NB. Notice ". which converts string to numbers (if possible). This is needed if a given column has literal datatype.
+   NB. Take notice that although we converted to float for condition, the resultant filtered inverted table retains original type.
 
    ixs rowsFromTable bonds
 ┌──────────┬───────┬─────┬───────┐
@@ -402,7 +414,7 @@ We can request `quote >= 3.4` but only for 5y tenor, ie., if `tenor == 5Y`.
    ]ixs2=: (<'5Y') = ,;: >(<(<0),(<2)){ }.bonds
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 
-   NB. now we can fuse ixs1 and ixs2 through *. (AND operator)
+   NB. now we can combine ixs1 and ixs2 through *. , ie. AND operator
    ]ixs=: ixs1 *. ixs2
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
    ]ixss=: ixs # i.nrows bonds
@@ -480,7 +492,7 @@ Now let's request data slice for trading week from 2022-06-06 to 2022-06-10.
 ```
 
 One can also use `condIxs` function from j/analysis.ijs to get indices for a given condition.
-A number of conditions can then be composed to form more complex condition.
+A number of conditions can then be composed to form a more complex condition.
 
 ### Order rows
 The another useful task is an ability to order by column. We can order by column using "/:" or "\\:"
@@ -563,7 +575,7 @@ The another useful task is an ability to order by column. We can order by column
 └──────────┴───────┴─────┴───────┘
 ```
 
-For the sake of ordering with more than 1 column (ie., first ordering by column1 then finetune the ordering within the same values of
+For the sake of ordering with more than 1 column (ie., first ordering by column1 then fine-tuning the ordering within the same values of
 the first ordering via column2 ordering, etc.) we will introduce `ranking` as follows:
 ```j
    ranking=: i.!.0~ { /:@/:
@@ -576,7 +588,7 @@ the first ordering via column2 ordering, etc.) we will introduce `ranking` as fo
 Upon a close look we can discern patterns reflecting data columns represented in ranking row-wise.
 For example, the first row is associated with `date` column values. We have the following values in
 `week` table: `2022-06-06`, `2022-06-07`, .. and the corresponding ranks: `0`, `6`, ..
-`2022-06-06` is the first value upon the adopted ordering and there are 6 occurences of them in
+`2022-06-06` is the first value upon the adopted ordering and there are 6 occurences of them in the first row of
 `week` table. Hence, all `2022-06-06` rows have `0` representation, all `2022-06-07` rows have `6`
 representation and so on.
 
@@ -661,7 +673,9 @@ columns is omitted.
 
 We might want more fine-grained control over ordering. For example, we might request to
 order `date` by ascending order and within the same values of `date` order further via `tenor`.
-In order to achieve that we need to change how ranking matrix looks like.
+In order to achieve that we need to change how ranking matrix looks like. As `date` is the first
+column and `tenor` the third we will have ranking matrix with second and fourth row equal to being
+0 rows.
 ```j
    ]ranking1=: ((<(<0),(<0)){ranking&> }.week) ,0, ((<(<0),(<2)){ranking&> }.week) ,: 0
  0  6 12 18 24  0  6 12 18 24 0 6 12 18 24  0  6 12 18 24  0  6 12 18 24 0 6 12 18 24
@@ -721,7 +735,7 @@ ranking matrix.
 10 10 10 10 10 0 0  0  0  0 20 20 20 20 20 10 10 10 10 10 0 0  0  0  0 20 20 20 20 20
  0  0  0  0  0 0 0  0  0  0  0  0  0  0  0  0  0  0  0  0 0 0  0  0  0  0  0  0  0  0
 
-   NB. Notice we created first row from ascending ranking and third from descending ranking
+   NB. Notice we created the first row from ascending ranking and the third from descending ranking
    $ranking2
 4 30
    ranking2 orderFromRanking week
@@ -895,10 +909,10 @@ aabbc
   NB. We have the table sorted first by date in ascending order, then by tenor by custom order '10Y - 5Y - 1Y'
 ```
 
-The last task of ordering will be sorting the table by date in an ascending order, then by country, and finally
-by tenor. We will need to perform the exchange of the columns `country` and `tenor`, adopt ordering, and bring back initial column positions.
+The last task of ordering will be sorting the table by `date` in an ascending order, then by `country`, and finally
+by tenor. We will need to perform the exchange of the columns `country` and `tenor`, adopt the ordering, and bring back initial column positions.
 Why exchange is needed here? Because `country` is after `tenor` the ranking would order the latter first. And we are after
-ordering of the former first and only then the latter. Let's see first what will happen if we do not perform exchange columns trick.
+ordering of the `country` first and only then adopt ordering upon `tenor`. Let's see first what will happen if we do not perform exchange columns trick.
 
 ```j
    ]ranking4=: ((<(<0),(<0)){rankingAsc&> }.week) ,0,customRankingTenor,:((<(<0),(<2)){rankingAsc&> }.week)
@@ -942,7 +956,8 @@ ordering of the former first and only then the latter. Let's see first what will
 │2022-06-10│2.5070 │1Y   │US     │
 └──────────┴───────┴─────┴───────┘
 ```
-The exchange of columns gives the desired ordering.
+As expected the table is ordered by `date` then `tenor` then `country`.
+Applying ordering after the exchange of columns gives the desired ordering.
 
 ```j
    NB. see j/analysis.ijs
@@ -1021,7 +1036,7 @@ The exchange of columns gives the desired ordering.
 │2022-06-10│3.2637 │US     │5Y   │
 │2022-06-10│2.5070 │US     │1Y   │
 └──────────┴───────┴───────┴─────┘
-   NB. Restoring initial column positions
+   NB. Calculation with restoring of initial column positions
    (2,3) exchangeColumns (ranking4 orderFromRanking week1)
 ┌──────────┬───────┬─────┬───────┐
 │date      │quote  │tenor│country│
