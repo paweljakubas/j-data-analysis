@@ -2780,7 +2780,7 @@ calculate row count, average, maximum and minimum quotes.
 │└──────────┴───────┴─────┴───────┴───────┴──────┘│                                                 │└──────────┴───────┴─────┴───────┴───────┴──────┘│
 └─────────────────────────────────────────────────┴─────────────────────────────────────────────────┴─────────────────────────────────────────────────┘
 
-   transformTable=: 4 : 0
+   transformTable1=: 4 : 0
 'name f'=: x
 h=.0{y
 c=:(<0$0) ]F:.{{ <name;<(f`:6) >x }} 1{y
@@ -2794,7 +2794,7 @@ h,:c
 │     │└─────┘│
 └─────┴───────┘
 
-   ('count'; <(nrows`'')) transformTable group
+   ('count'; <(nrows`'')) transformTable1 group
 ┌─────────┬─────────┬─────────┐
 │┌─┬────┐ │┌─┬────┐ │┌─┬─────┐│
 ││2│┌──┐│ ││2│┌──┐│ ││2│┌───┐││
@@ -2807,7 +2807,7 @@ h,:c
 │└─────┴─┘│└─────┴─┘│└─────┴─┘│
 └─────────┴─────────┴─────────┘
 
-   ('min'; <({{ (<./) ".>(<(<0),(<1)){ }. y}}`'')) transformTable group
+   ('min'; <({{ (<./) ".>(<(<0),(<1)){ }. y}}`'')) transformTable1 group
 ┌────────────┬───────────┬──────────┐
 │┌─┬────┐    │┌─┬────┐   │┌─┬─────┐ │
 ││2│┌──┐│    ││2│┌──┐│   ││2│┌───┐│ │
@@ -2819,7 +2819,7 @@ h,:c
 ││min│_0.083│││min│0.035│││min│0.23││
 │└───┴──────┘│└───┴─────┘│└───┴────┘│
 └────────────┴───────────┴──────────┘
-   ('max'; <({{ (>./) ".>(<(<0),(<1)){ }. y}}`'')) transformTable group
+   ('max'; <({{ (>./) ".>(<(<0),(<1)){ }. y}}`'')) transformTable1 group
 ┌───────────┬───────────┬────────────┐
 │┌─┬────┐   │┌─┬────┐   │┌─┬─────┐   │
 ││2│┌──┐│   ││2│┌──┐│   ││2│┌───┐│   │
@@ -2831,7 +2831,7 @@ h,:c
 ││max│3.052│││max│0.038│││max│3.0455││
 │└───┴─────┘│└───┴─────┘│└───┴──────┘│
 └───────────┴───────────┴────────────┘
-   ('mean'; <({{ (+/ % #) ".>(<(<0),(<1)){ }. y}}`'')) transformTable group
+   ('mean'; <({{ (+/ % #) ".>(<(<0),(<1)){ }. y}}`'')) transformTable1 group
 ┌────────────┬─────────────┬─────────────┐
 │┌─┬────┐    │┌─┬────┐     │┌─┬─────┐    │
 ││2│┌──┐│    ││2│┌──┐│     ││2│┌───┐│    │
@@ -2867,7 +2867,7 @@ and performs exactly this.
 │└──────────┴───────┴─────┴───────┴───────┴──────┘│                                                 │└──────────┴───────┴─────┴───────┴───────┴──────┘│
 └─────────────────────────────────────────────────┴─────────────────────────────────────────────────┴─────────────────────────────────────────────────┘
 
-   NB. see j/analysis.ijs to see getColumnVals
+   NB. see j/analysis.ijs for getColumnVals
    ]left=: ('count'; <(nrows`'')),:('min'; <({{ (<./) ". 1&getColumnVals y}}`''))
 ┌─────┬────────────────────────────────────────────┐
 │count│┌─────┐                                     │
@@ -3034,7 +3034,8 @@ We can now use transform techniques developed above to boost grouping functional
 │└──────────┴───────┴─────┴───────┴──────┘│                                         │
 └─────────────────────────────────────────┴─────────────────────────────────────────┘
 
-      ]left=: ('subgroups';<({{4 groupBy y}}`''))
+   NB. Let's now group by weekno in each tenor group
+   ]left=: ('subgroups';<({{4 groupBy y}}`''))
 ┌─────────┬─────────────────────────────┐
 │subgroups│┌───────────────────────────┐│
 │         ││┌─┬───────────────────────┐││
@@ -3105,9 +3106,9 @@ We can now use transform techniques developed above to boost grouping functional
 └─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-So we first made customized tenor grouping, ending up with two groups `1Y-10Y` and `1Y-5Y`, ie. overlapping groups. Then withing each group
-we grouped by `weekno`. Hence we attained nontrivial 2 layer groupping with which we can work further. We can once again further group by
-, for example by `country` or calculate aggregate within six subgroups.
+So we first made customized tenor grouping, ending up with two groups `1Y-10Y` and `1Y-5Y`, ie. overlapping groups. Then within each tenor group
+we grouped by `weekno`. Hence we attained nontrivial 2 layer grouping with which we can work further. We can once further apply group by,
+for example, by `country` or calculate aggregate within six subgroups (like below).
 ```j
    tenorWeeknoGrouping=: left transformTable tenorGrouping
    (0{tenorWeeknoGrouping) ,: 0 ]F:. {{ <('count'; <(nrows`'')) transformTable >1{,>> x}} 1{tenorWeeknoGrouping
@@ -3136,8 +3137,8 @@ we grouped by `weekno`. Hence we attained nontrivial 2 layer groupping with whic
 
 ### Folding data
 
-We know how to selectively filter the rows of an inverted table, order by columns and impose group by decomposition.
-This allows for ending up with a data snapshot having three columns in which two are ordered and the third one's values are
+We know how to selectively filter the rows of an inverted table, order by columns and impose grouping by.
+This allows for ending up with a data snapshot comprising three columns in which two are ordered and the third one's values are
 of interest to us. We are often not particularly interested in three column shape and want to fold
 third column values in such a way that the result exposes the two columns relation in matrix form.
 Upon assembling the values in a matrix form we need to take care of missing values.
@@ -3145,6 +3146,7 @@ We may wish to construct 2D array from those values to proceed with matrix based
 to see the case.
 ```j
    NB. Let's take all quotes for JP and remove the redundant country column
+   NB. In that case tenor-date will uniquely determine value, ie. there is at most one quote per tenor-date value.
    ]ix=: ((3;<(<'JP'));({{x e. <y}}"1`'')) condIxs bonds
 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
    ]ixs=: ix # i.nrows bonds
@@ -3263,7 +3265,7 @@ to see the case.
 │2022-06-17│0.2250 │10Y  │
 └──────────┴───────┴─────┘
 ```
-If we expect non-missing data then it is very easy
+If we would expect non-missing data then it is very easy
 ```j
    ]tenors=: (<"1) {./.~  2 getColumnVals bonds2
 ┌───┬───┬───┐
@@ -3429,7 +3431,7 @@ to simulate missing values.
 │2022-05-30│2022-05-31│2022-06-01│2022-06-02│2022-06-03│2022-06-06│2022-06-07│2022-06-08│2022-06-09│2022-06-10│2022-06-13│2022-06-14│2022-06-15│2022-06-16│2022-06-17│
 └──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
 
-   NB. Let's see how we can construct querying for a value in a given date and for a given tenor
+   NB. Let's see how we can query for a value for a given date and tenor
    ((0;<(<'2022-05-31'));({{ x e. <y }}"1`'')) condIxs bonds3
 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
    ((2;<(<'1Y '));({{ x e. <y }}"1`'')) condIxs bonds3
@@ -3558,7 +3560,7 @@ Now we can construct matrix using `constructMatrixCol` inside as implemented in 
 ```
 
 Note that the ability to transform the inverted table like above means we will be defering numerical conversion to the last stage.
-Before that we can use some conversions to rely not on lexicographical ordering but for example numerical one, but we will return
+In processing steps we can use some value conversions from literal to numerical (like we did in ordering), but we will return
 to literal representation due to capability presented above. In the end we usually want to facilitate matrix operations,
 and in the steps leading to that we will try to maintain literal data type. More on handling null values is presented in
 [Null values](#null-values) section.
