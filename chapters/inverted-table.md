@@ -14,7 +14,6 @@
 11. [Collapse data and rotate dataframe](#folding-data)
 12. [Work with two inverted tables](#two-tables)
 13. [Null values](#null-values)
-14. [Summary via example](#summary)
 
 ### Rationale behind using inverted table
 
@@ -3567,10 +3566,10 @@ and in the steps leading to that we will try to maintain literal data type. More
 
 ### Two tables
 
-Merging two tables that share columns is fundamental task and hence we  will develop join functionality in this section.
-First of all we need to have a check that a given inverted table and specified set of columns
+Merging two tables that share values in their respective columns is fundamental task and hence we will develop join functionality in this section.
+First of all we need to have a check that in a given inverted table the specified set of columns
 is valid for joining, ie. the set of columns establishes a unique key.
-Moreover, the selected columns cannot have missing values.
+Moreover, the selected column(s) cannot have missing values.
 ```j
    countMissingVals=: 4 : 0
 size=.${.y
@@ -3648,7 +3647,7 @@ keys=. 0 ]F:. {{ <(<x) {&.> tmp_cols }} i.#0{>tmp_cols
 └───────────────┴───────────────┴───────────────┴───────────────┴───────────────┴───────────────┴───────────────┴───────────────┴───────────────┘
 ```
 Both functions are also available in j/analysis.ijs. It is worth noting that also multi-column keys are handled.
-In order for an inverted table to have valid key set the number of returned keys from `getUniqueKeys` must equal to
+In order for an inverted table to have a valid key set the number of returned keys from `getUniqueKeys` must equal to
 the number of rows in this table.
 ```j
    checkKeys=: {{ (# x getUniqueKeys y) = nrows y }}
@@ -3853,9 +3852,9 @@ date,weekday,weekno
 2022-06-08,Wed,23
 2022-06-06,Mon,23
 
-   NB. Left join will iterate rows of left table, identify the rows key(s),
-   NB. seek for the row in the right table, and append to new columns.
-   NB. When the proceess ends the columns will be added to the left table.
+   NB. Left join will iterate over rows of left table, identify the rows key(s),
+   NB. seek them in the right table, and append the respective new columns values.
+   NB. When the proceess ends the newly formed columns will be added to the left table.
 
    ]left=: 0;<a
 ┌─┬──────────────────────────────────┐
@@ -3979,7 +3978,7 @@ tmp_y=: y
    ((0;'2022-06-08');<(2;23)) getKeysIxs rightData
 0 0 0 0 0 0 0 0 0 1 0
 
-   NB. Now funcionality to get data from right table for a given key
+   NB. Now funcionality to get data from the right table for a given key
    NB. But only non-key column values and without header
    getKeyFields=: 4 : 0
 ixs=. x getKeysIxs y
@@ -4437,7 +4436,7 @@ tmp_res=: toTableFromGrid newh,newcols
 └────┴────┴──────┴──────┴──────┴──────┘
 ```
 
-Right join is straightforward when we have `leftJoin`:
+Implementation of `rightJoin` is straightforward when we have `leftJoin`:
 ```j
    rightJoin=: leftJoin~
 
@@ -4511,7 +4510,7 @@ Right join is straightforward when we have `leftJoin`:
 
 ```
 
-Outer full join retains all keys from left and right keys and fills in values from the other table and retrieving from the one.
+Outer full join retains all keys from left and right keys and fills in values from the other table and retrieve values from the given one.
 In order to construct such a join one needs to retrieve first unique keys among both tables.
 ```j
    outerJoin=: 4 : 0
@@ -4719,4 +4718,66 @@ ixs rowsFromTable res
 ```
 
 ### Null values
-### Summary
+
+As mentioned before we try to defer value conversion and stick to literal type until the phase where missing values
+are handled. We can remove missing rows or set some values in place of missing ones.
+Erasing rows for an inverted table y that have missing data in a column x is below.
+```j
+   ]missingTable=: ((0,1);<left) rightJoin ((0,1);<right)
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field3│field4│field1│field2│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │f1    │dog   │a     │1     │
+│k1  │kk2 │f2    │cat   │b     │11    │
+│k3  │kk1 │f3    │snake │f     │21    │
+│k1  │kk3 │f4    │frog  │      │      │
+│k4  │kk2 │f3    │horse │      │      │
+│k8  │kk1 │f1    │bug   │      │      │
+│k5  │kk5 │f4    │bird  │c     │10    │
+│k6  │kk1 │f5    │dog   │      │      │
+│k7  │kk2 │f9    │spider│z     │5     │
+│k7  │kk4 │f2    │tiger │      │      │
+└────┴────┴──────┴──────┴──────┴──────┘
+   eraseMissingRows=: 4 : 0
+size=.${.y
+assert. ( (x >: (- size)) *. (x < size) )
+vals=. x getColumnVals y
+ixs=. (-. 0 ]F:. {{ ((<strdespace x)=<'') }} vals) # i. # vals
+ixs rowsFromTable y
+)
+   4 eraseMissingRows missingTable
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field3│field4│field1│field2│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │f1    │dog   │a     │1     │
+│k1  │kk2 │f2    │cat   │b     │11    │
+│k3  │kk1 │f3    │snake │f     │21    │
+│k5  │kk5 │f4    │bird  │c     │10    │
+│k7  │kk2 │f9    │spider│z     │5     │
+└────┴────┴──────┴──────┴──────┴──────┘
+   5 eraseMissingRows missingTable
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field3│field4│field1│field2│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │f1    │dog   │a     │1     │
+│k1  │kk2 │f2    │cat   │b     │11    │
+│k3  │kk1 │f3    │snake │f     │21    │
+│k5  │kk5 │f4    │bird  │c     │10    │
+│k7  │kk2 │f9    │spider│z     │5     │
+└────┴────┴──────┴──────┴──────┴──────┘
+   3 eraseMissingRows missingTable
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field3│field4│field1│field2│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │f1    │dog   │a     │1     │
+│k1  │kk2 │f2    │cat   │b     │11    │
+│k3  │kk1 │f3    │snake │f     │21    │
+│k1  │kk3 │f4    │frog  │      │      │
+│k4  │kk2 │f3    │horse │      │      │
+│k8  │kk1 │f1    │bug   │      │      │
+│k5  │kk5 │f4    │bird  │c     │10    │
+│k6  │kk1 │f5    │dog   │      │      │
+│k7  │kk2 │f9    │spider│z     │5     │
+│k7  │kk4 │f2    │tiger │      │      │
+└────┴────┴──────┴──────┴──────┴──────┘
+```

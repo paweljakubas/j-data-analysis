@@ -2461,3 +2461,63 @@ NB. │k3  │kk1 │f     │21    │snake │f3    │
 NB. │k5  │kk5 │c     │10    │bird  │f4    │
 NB. │k7  │kk2 │z     │5     │spider│f9    │
 NB. └────┴────┴──────┴──────┴──────┴──────┘
+
+NB. Erase rows for an inverted table y that have missing data in a column x
+eraseMissingRows=: 4 : 0
+size=.${.y
+assert. ( (x >: (- size)) *. (x < size) )
+vals=. x getColumnVals y
+ixs=. (-. 0 ]F:. {{ ((<strdespace x)=<'') }} vals) # i. # vals
+ixs rowsFromTable y
+)
+NB. Example
+NB.    ]missingTable=: ((0,1);<left) rightJoin ((0,1);<right)
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field3│field4│field1│field2│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │f1    │dog   │a     │1     │
+NB. │k1  │kk2 │f2    │cat   │b     │11    │
+NB. │k3  │kk1 │f3    │snake │f     │21    │
+NB. │k1  │kk3 │f4    │frog  │      │      │
+NB. │k4  │kk2 │f3    │horse │      │      │
+NB. │k8  │kk1 │f1    │bug   │      │      │
+NB. │k5  │kk5 │f4    │bird  │c     │10    │
+NB. │k6  │kk1 │f5    │dog   │      │      │
+NB. │k7  │kk2 │f9    │spider│z     │5     │
+NB. │k7  │kk4 │f2    │tiger │      │      │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
+NB.    4 eraseMissingRows missingTable
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field3│field4│field1│field2│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │f1    │dog   │a     │1     │
+NB. │k1  │kk2 │f2    │cat   │b     │11    │
+NB. │k3  │kk1 │f3    │snake │f     │21    │
+NB. │k5  │kk5 │f4    │bird  │c     │10    │
+NB. │k7  │kk2 │f9    │spider│z     │5     │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
+NB.    5 eraseMissingRows missingTable
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field3│field4│field1│field2│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │f1    │dog   │a     │1     │
+NB. │k1  │kk2 │f2    │cat   │b     │11    │
+NB. │k3  │kk1 │f3    │snake │f     │21    │
+NB. │k5  │kk5 │f4    │bird  │c     │10    │
+NB. │k7  │kk2 │f9    │spider│z     │5     │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
+NB.    3 eraseMissingRows missingTable
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field3│field4│field1│field2│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │f1    │dog   │a     │1     │
+NB. │k1  │kk2 │f2    │cat   │b     │11    │
+NB. │k3  │kk1 │f3    │snake │f     │21    │
+NB. │k1  │kk3 │f4    │frog  │      │      │
+NB. │k4  │kk2 │f3    │horse │      │      │
+NB. │k8  │kk1 │f1    │bug   │      │      │
+NB. │k5  │kk5 │f4    │bird  │c     │10    │
+NB. │k6  │kk1 │f5    │dog   │      │      │
+NB. │k7  │kk2 │f9    │spider│z     │5     │
+NB. │k7  │kk4 │f2    │tiger │      │      │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
