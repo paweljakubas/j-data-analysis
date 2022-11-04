@@ -2521,3 +2521,77 @@ NB. │k6  │kk1 │f5    │dog   │      │      │
 NB. │k7  │kk2 │f9    │spider│z     │5     │
 NB. │k7  │kk4 │f2    │tiger │      │      │
 NB. └────┴────┴──────┴──────┴──────┴──────┘
+
+NB. Replace missing values of a given column ix with new value newval for an inverted table y.
+NB. x is expected to have the following structure
+NB. ┌──────┬──┐
+NB. │newval│ix│
+NB. └──────┴──┘
+   replaceMissingVals=: 4 : 0
+size=.${.y
+'tmp_newval tmp_ix'=:x
+assert. ( (tmp_ix >: (- size)) *. (tmp_ix < size) )
+newcol=. 0 ]F:. {{ if. ((<strdespace x)=<'') do. tmp_newval else. x end. }} tmp_ix getColumnVals y
+(tmp_ix;<newcol) updateColumnVals y
+)
+NB. Example
+NB.    ]missingTable=: ((0,1);<left) rightJoin ((0,1);<right)
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field3│field4│field1│field2│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │f1    │dog   │a     │1     │
+NB. │k1  │kk2 │f2    │cat   │b     │11    │
+NB. │k3  │kk1 │f3    │snake │f     │21    │
+NB. │k1  │kk3 │f4    │frog  │      │      │
+NB. │k4  │kk2 │f3    │horse │      │      │
+NB. │k8  │kk1 │f1    │bug   │      │      │
+NB. │k5  │kk5 │f4    │bird  │c     │10    │
+NB. │k6  │kk1 │f5    │dog   │      │      │
+NB. │k7  │kk2 │f9    │spider│z     │5     │
+NB. │k7  │kk4 │f2    │tiger │      │      │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
+NB.    ('wow';4) replaceMissingVals missingTable
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field3│field4│field1│field2│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │f1    │dog   │a     │1     │
+NB. │k1  │kk2 │f2    │cat   │b     │11    │
+NB. │k3  │kk1 │f3    │snake │f     │21    │
+NB. │k1  │kk3 │f4    │frog  │wow   │      │
+NB. │k4  │kk2 │f3    │horse │wow   │      │
+NB. │k8  │kk1 │f1    │bug   │wow   │      │
+NB. │k5  │kk5 │f4    │bird  │c     │10    │
+NB. │k6  │kk1 │f5    │dog   │wow   │      │
+NB. │k7  │kk2 │f9    │spider│z     │5     │
+NB. │k7  │kk4 │f2    │tiger │wow   │      │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
+NB.    ('wow';5) replaceMissingVals missingTable
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field3│field4│field1│field2│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │f1    │dog   │a     │1     │
+NB. │k1  │kk2 │f2    │cat   │b     │11    │
+NB. │k3  │kk1 │f3    │snake │f     │21    │
+NB. │k1  │kk3 │f4    │frog  │      │wow   │
+NB. │k4  │kk2 │f3    │horse │      │wow   │
+NB. │k8  │kk1 │f1    │bug   │      │wow   │
+NB. │k5  │kk5 │f4    │bird  │c     │10    │
+NB. │k6  │kk1 │f5    │dog   │      │wow   │
+NB. │k7  │kk2 │f9    │spider│z     │5     │
+NB. │k7  │kk4 │f2    │tiger │      │wow   │
+NB. └────┴────┴──────┴──────┴──────┴──────┘
+NB.    ('wow';0) replaceMissingVals missingTable
+NB. ┌────┬────┬──────┬──────┬──────┬──────┐
+NB. │key1│key2│field3│field4│field1│field2│
+NB. ├────┼────┼──────┼──────┼──────┼──────┤
+NB. │k1  │kk1 │f1    │dog   │a     │1     │
+NB. │k1  │kk2 │f2    │cat   │b     │11    │
+NB. │k3  │kk1 │f3    │snake │f     │21    │
+NB. │k1  │kk3 │f4    │frog  │      │      │
+NB. │k4  │kk2 │f3    │horse │      │      │
+NB. │k8  │kk1 │f1    │bug   │      │      │
+NB. │k5  │kk5 │f4    │bird  │c     │10    │
+NB. │k6  │kk1 │f5    │dog   │      │      │
+NB. │k7  │kk2 │f9    │spider│z     │5     │
+NB. │k7  │kk4 │f2    │tiger │      │      │
+NB. └────┴────┴──────┴──────┴──────┴──────┘

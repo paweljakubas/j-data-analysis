@@ -4781,3 +4781,59 @@ ixs rowsFromTable y
 │k7  │kk4 │f2    │tiger │      │      │
 └────┴────┴──────┴──────┴──────┴──────┘
 ```
+
+Next step is to replace missing byte array (ie. literal) in a given column with new value.
+```j
+   replaceMissingVals=: 4 : 0
+size=.${.y
+'tmp_newval tmp_ix'=:x
+assert. ( (tmp_ix >: (- size)) *. (tmp_ix < size) )
+newcol=. 0 ]F:. {{ if. ((<strdespace x)=<'') do. tmp_newval else. x end. }} tmp_ix getColumnVals y
+(tmp_ix;<newcol) updateColumnVals y
+)
+   ('wow';4) replaceMissingVals missingTable
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field3│field4│field1│field2│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │f1    │dog   │a     │1     │
+│k1  │kk2 │f2    │cat   │b     │11    │
+│k3  │kk1 │f3    │snake │f     │21    │
+│k1  │kk3 │f4    │frog  │wow   │      │
+│k4  │kk2 │f3    │horse │wow   │      │
+│k8  │kk1 │f1    │bug   │wow   │      │
+│k5  │kk5 │f4    │bird  │c     │10    │
+│k6  │kk1 │f5    │dog   │wow   │      │
+│k7  │kk2 │f9    │spider│z     │5     │
+│k7  │kk4 │f2    │tiger │wow   │      │
+└────┴────┴──────┴──────┴──────┴──────┘
+   ('wow';5) replaceMissingVals missingTable
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field3│field4│field1│field2│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │f1    │dog   │a     │1     │
+│k1  │kk2 │f2    │cat   │b     │11    │
+│k3  │kk1 │f3    │snake │f     │21    │
+│k1  │kk3 │f4    │frog  │      │wow   │
+│k4  │kk2 │f3    │horse │      │wow   │
+│k8  │kk1 │f1    │bug   │      │wow   │
+│k5  │kk5 │f4    │bird  │c     │10    │
+│k6  │kk1 │f5    │dog   │      │wow   │
+│k7  │kk2 │f9    │spider│z     │5     │
+│k7  │kk4 │f2    │tiger │      │wow   │
+└────┴────┴──────┴──────┴──────┴──────┘
+   ('wow';0) replaceMissingVals missingTable
+┌────┬────┬──────┬──────┬──────┬──────┐
+│key1│key2│field3│field4│field1│field2│
+├────┼────┼──────┼──────┼──────┼──────┤
+│k1  │kk1 │f1    │dog   │a     │1     │
+│k1  │kk2 │f2    │cat   │b     │11    │
+│k3  │kk1 │f3    │snake │f     │21    │
+│k1  │kk3 │f4    │frog  │      │      │
+│k4  │kk2 │f3    │horse │      │      │
+│k8  │kk1 │f1    │bug   │      │      │
+│k5  │kk5 │f4    │bird  │c     │10    │
+│k6  │kk1 │f5    │dog   │      │      │
+│k7  │kk2 │f9    │spider│z     │5     │
+│k7  │kk4 │f2    │tiger │      │      │
+└────┴────┴──────┴──────┴──────┴──────┘
+```
