@@ -27,10 +27,9 @@ required for powerful data analysis.
 11. Learning J. An Introduction to the J Programming Language, Roger Stokes, [https://www.jsoftware.com/help/learning/contents.htm#toc]
 12. Fractals, Visualization & J, 4th ed. (2 Parts), Clifford A. Reiter 2016
 13. Fifty Shades of J, Norman Thomson, [https://code.jsoftware.com/wiki/Fifty_Shades_of_J]
-14. Linear algebra and random matrices using J, Pawel Jakubas, [https://github.com/paweljakubas/j-random-matrices]
-15. Numerical methods using J, Pawel Jakubas, [https://github.com/paweljakubas/j-numerical-methods] (coming soon)
+14. Math adventures using J, Pawel Jakubas, [https://github.com/paweljakubas/j-math]
 
-   *Throughout the code J903 version of J lang was used.*
+   *Throughout the code 9.7 version of J lang was used.*
 
 
 ## Contents
@@ -38,7 +37,9 @@ required for powerful data analysis.
 ### [CSV](chapters/csv.md)
 ### [Inverted table](chapters/inverted-table.md)
 ### [Gnuplot](chapters/gnuplot.md)
+### [zsat]
 ### [Inverted table workout and comparison with polar and pandas](chapters/workout.md)
+### [Analysis of NIPA data series](chapters/nipa.md)
 ### [Data analysis cases using SQL and J's approach]
 ### [Information-based learning]
 ### [Similarity-based learning]
@@ -51,3 +52,8 @@ required for powerful data analysis.
 ### [Case study - Multimodal Single-Cell Integration]
 ### [Case study - Galaxy classification]
 ### [Case study - Treasury yield curves and surfaces]
+
+<div align="center">
+  <img src="./figures/NoAiHand.png" alt="No AI powered, only Human effort" width="200">
+  <p>Figure 1: Disclaimer for this repo</p>
+</div>
