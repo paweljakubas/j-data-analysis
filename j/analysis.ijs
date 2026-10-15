@@ -91,6 +91,36 @@ t=. toGridFromTable >1{y
 fromGridToGnuplot strs;<t
 )
 
+NB. zsat integration - https://github.com/paweljakubas/zsat
+NB.
+NB. Convert a two-row numeric array to zsat's vec2d JSON representation and
+NB. hand it over to zsat through a named pipe (FIFO). Each column of y becomes
+NB. one [x,y] pair, e.g.
+NB.    vec2d 2 3 $ 0 1 2 1 3 4
+NB. [[0,1],[1,3],[2,4]]
+NB.
+NB. The JSON is written to the FIFO whose path is taken from the JZSAT_FIFO
+NB. environment variable (default /tmp/jzsat.fifo) and is also returned as the
+NB. result. Opening the FIFO for writing blocks until a reader attaches, so the
+NB. intended three-step workflow is:
+NB.    1. in jconsole invoke      vec2d 2 3 $ 0 1 2 1 3 4
+NB.       (jconsole blocks, waiting for a reader)
+NB.    2. switch to the terminal/pane where zsat runs and consume the stream:
+NB.          zsat draw < /tmp/jzsat.fifo
+NB.    3. switch back to jconsole, which has returned to the prompt.
+NB. Set JZSAT_FIFO before starting jconsole to use a different path.
+vec2d =: 3 : 0
+  d=. y
+  if. 2 = {.$d do. d=. |: d end.
+  pair=. {{ '[' , (": {.y) , ',' , (": {:y) , ']' }}
+  json=. '[' , (}: ; (pair each <"1 d) ,. <',') , ']'
+  fifo=. 2!:5 'JZSAT_FIFO'
+  if. (0;'') e.~ <fifo do. fifo=. '/tmp/jzsat.fifo' end.
+  2!:0 'test -p ''',fifo,''' || mkfifo ''',fifo,''''
+  (json,LF) 1!:2 < fifo
+  json
+)
+
 NB. Number of rows in an inverted table
 nrows=: {{ >{.{.#&.>}.y }}
 NB. Example
