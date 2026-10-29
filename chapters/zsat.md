@@ -53,8 +53,8 @@ result.
    zsat draw < /tmp/jzsat.fifo
    ```
 <div align="left">
-  <img src="./figures/zsat1.png" alt="Expected in ghostty" width="200">
-  <p>Figure 1: Disclaimer for this repo</p>
+  <img src="../figures/zsat1.png" alt="Expected in ghostty" width="200">
+  <p>What one should see in Ghostty terminal</p>
 </div>
 
 
