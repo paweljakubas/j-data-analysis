@@ -93,7 +93,7 @@ fromGridToGnuplot strs;<t
 
 NB. zsat integration - https://github.com/paweljakubas/zsat
 NB.
-NB. Convert a two-row numeric array to zsat's vec2d JSON representation and
+NB. Convert a two-row numeric array to zsat's vec2d data representation and
 NB. hand it over to zsat through a named pipe (FIFO). Each column of y becomes
 NB. one [x,y] pair, e.g.
 NB.    vec2d 2 3 $ 0 1 2 1 3 4

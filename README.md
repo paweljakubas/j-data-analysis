@@ -37,7 +37,7 @@ required for powerful data analysis.
 ### [CSV](chapters/csv.md)
 ### [Inverted table](chapters/inverted-table.md)
 ### [Gnuplot](chapters/gnuplot.md)
-### [zsat](https://github.com/paweljakubas/zsat)
+### [zsat](chapters/zsat.md)
 
 [zsat](https://github.com/paweljakubas/zsat) is a Zig-based science plotting and
 animation command line tool. It consumes 2D vector data from **stdin** as JSON,
