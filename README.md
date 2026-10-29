@@ -38,62 +38,7 @@ required for powerful data analysis.
 ### [Inverted table](chapters/inverted-table.md)
 ### [Gnuplot](chapters/gnuplot.md)
 ### [zsat](chapters/zsat.md)
-
-[zsat](https://github.com/paweljakubas/zsat) is a Zig-based science plotting and
-animation command line tool. It consumes 2D vector data from **stdin** as JSON,
-e.g. `[[0,1],[1,3],[2,4]]`, and renders it in any terminal that implements the
-[kitty graphics protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/)
-(Kitty, WezTerm, Ghostty, ...).
-
-`j/analysis.ijs` ships a `vec2d` function that turns a two-row array into
-zsat's `vec2d` JSON and hands it over to zsat through a named pipe (FIFO). This
-makes it possible to drive zsat directly from an interactive `jconsole` session
-running in one terminal, while zsat consumes the data from another.
-
-`vec2d` takes a two-row array (`2 x n`) where each column becomes one `[x,y]`
-pair:
-
-```j
-   vec2d 2 3 $ 0 1 2 1 3 4
-[[0,1],[1,3],[2,4]]
-```
-
-The JSON is written to the FIFO named by the `JZSAT_FIFO` environment variable
-(default `/tmp/jzsat.fifo`, created automatically) and is also returned as the
-result.
-
-#### Workflow
-
-1. In `jconsole` invoke `vec2d`. J opens the FIFO for writing and blocks,
-   waiting for a reader to attach:
-
-   ```j
-   jconsole> vec2d 2 3 $ 0 1 2 1 3 4
-   ```
-
-2. Switch to the terminal/pane where `zsat` runs and consume the stream. The
-   reader attaches to the FIFO, the data flows, and zsat draws the figure:
-
-   ```bash
-   zsat draw < /tmp/jzsat.fifo
-   ```
-
-3. Switch back to `jconsole`, which has returned to the prompt and printed the
-   JSON it sent:
-
-   ```
-   [[0,1],[1,3],[2,4]]
-   ```
-
-To use a different FIFO path, set `JZSAT_FIFO` before starting `jconsole`:
-
-```bash
-JZSAT_FIFO=/tmp/my.fifo jconsole
-```
-
-### [Inverted table workout and comparison with polar and pandas](chapters/workout.md)
-### [Analysis of NIPA data series](chapters/nipa.md)
-### [Data analysis cases using SQL and J's approach]
+### [Analysis of GDP data series](chapters/nipa.md)
 ### [Information-based learning]
 ### [Similarity-based learning]
 ### [Deep look at statistical distributions]

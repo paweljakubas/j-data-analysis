@@ -52,7 +52,10 @@ result.
    ```bash
    zsat draw < /tmp/jzsat.fifo
    ```
-   ![](figures/zsat1.png)
+<div align="left">
+  <img src="./figures/zsat1.png" alt="Expected in ghostty" width="200">
+  <p>Figure 1: Disclaimer for this repo</p>
+</div>
 
 
 4. Switch back to `jconsole`, which has returned to the prompt and printed the
